@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC6 - Team Scene</title>
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../../design-system/fonts.css">
+  <link rel="stylesheet" href="../../../design-system/tokens.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Scene Container -->
+  <div id="scene-container" class="loading">
+    جاري التحميل...
+  </div>
+
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+
+  <script>
+    // Scene 6 configuration
+    const SC6_CONFIG = {
+      "duration": 15000,
+      "background": "team.png",
+      "autoAdvance": false,
+      "timeline": [
+        {
+          "time": 0,
+          "action": "showText",
+          "config": {
+            "id": "narration",
+            "text": "كان الفريق يعمل بجد لتطوير نظام تشغيل عربي كامل للحاسوب صخر",
+            "type": "overlay",
+            "position": {
+              "x": "center",
+              "y": "10%"
+            },
+            "style": {
+              "color": "#FFFFFF",
+              "fontSize": "24px",
+              "lineHeight": "1.5",
+              "textAlign": "center",
+              "maxWidth": "90%"
+            },
+            "animation": {
+              "type": "typewriter",
+              "speed": 80,
+              "showCursor": true
+            }
+          }
+        },
+        {
+          "time": 8000,
+          "action": "animateSprite",
+          "config": {
+            "id": "walkingChar",
+            "frames": [
+              "1.png",
+              "2.png",
+              "3.png",
+              "4.png"
+            ],
+            "positions": [
+              {"x": 0, "y": "bottom-75px"},
+              {"x": 300, "y": "bottom-75px"},
+              {"x": 600, "y": "bottom-75px"},
+              {"x": 900, "y": "bottom-75px"}
+            ],
+            "frameDelay": 400,
+            "width": "450px",
+            "zIndex": 10
+          }
+        }
+      ]
+    };
+
+    // Add callback to notify parent when scene ends
+    SC6_CONFIG.onEnd = () => {
+      console.log('SC6 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc6-complete', '*');
+      }, 1000);
+    };
+
+    // Play intro sound
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('../../audio/music/ch1-theme.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC6: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+
+      // Create and play scene
+      const container = document.getElementById('scene-container');
+      const scenePlayer = new ScenePlayer(SC6_CONFIG, container);
+      scenePlayer.play();
+    });
+  </script>
+</body>
+</html>
