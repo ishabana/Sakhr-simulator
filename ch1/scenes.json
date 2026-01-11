@@ -1,0 +1,10 @@
+{
+  "chapter": 1,
+  "title": "الفصل الأول",
+  "music": "../audio/music/ch1-theme.mp3",
+  "musicVolume": 0.7,
+  "scenes": [
+    "sc1/scene.json",
+    "sc6/scene.json"
+  ]
+}
