@@ -28,7 +28,7 @@ None - Vanilla JavaScript animation with established patterns
 **Plans**: 1-2 plans
 
 Plans:
-- [ ] 01-01: Create sc6 scene from prompt (scene.json, HTML player, add to scenes.json)
+- [x] 01-01: Create sc6 scene from prompt (scene.json, HTML player, add to scenes.json)
 
 ### Phase 2: Chapter 2
 **Goal**: Create complete Chapter 2 with all scenes
@@ -64,7 +64,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Complete Chapter 1 | 0/1-2 | Not started | - |
+| 1. Complete Chapter 1 | 1/1-2 | In progress | - |
 | 2. Chapter 2 | 0/2-3 | Not started | - |
 | 3. Chapter 3 | 0/2-3 | Not started | - |
 | 4. Chapter 4 & Polish | 0/2-3 | Not started | - |
