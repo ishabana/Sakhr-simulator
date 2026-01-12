@@ -14,19 +14,41 @@
   <link rel="stylesheet" href="../../styles/text-boxes.css">
 
   <style>
+    /* Override to use proper centering from animation-base.css */
     body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
       margin: 0;
-      padding: 0;
+      overflow: hidden;
+    }
+
+    .screen-container {
+      position: relative;
       width: 1280px;
       height: 800px;
+      background: #000000;
       overflow: hidden;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
 <body>
-  <!-- Scene Container -->
-  <div id="scene-container" class="loading">
-    جاري التحميل...
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
   </div>
 
   <!-- Animation Engine Scripts -->
