@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC2 - Character Walking</title>
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../../design-system/fonts.css">
+  <link rel="stylesheet" href="../../../design-system/tokens.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+
+  <script>
+    // Scene 2 configuration
+    const SC2_CONFIG = {
+      "duration": 10000,
+      "background": "bg.png",
+      "autoAdvance": false
+    };
+
+    // Walking animation frames
+    const walkFrames = ['1.png', '2.png', '3.png'];
+
+    // Add callback to notify parent when scene ends
+    SC2_CONFIG.onEnd = () => {
+      console.log('SC2 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc2-complete', '*');
+      }, 1000);
+    };
+
+    // Play scene
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('../../audio/music/ch3-theme.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC2: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+
+      // Create background
+      const bg = document.createElement('img');
+      bg.src = SC2_CONFIG.background;
+      bg.className = 'scene-bg';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+
+      // Show front.png
+      const front = document.createElement('img');
+      front.src = 'front.png';
+      front.className = 'sprite';
+      front.style.width = '1000px';
+      front.style.left = '50%';
+      front.style.bottom = '0';
+      front.style.transform = 'translateX(-50%)';
+      front.style.zIndex = '10';
+      container.appendChild(front);
+
+      // Time 2000: Character walks in from outside canvas
+      setTimeout(() => {
+        const character = document.createElement('img');
+        character.src = walkFrames[0];
+        character.className = 'sprite';
+        character.style.width = '300px';
+        character.style.bottom = '80px';
+        character.style.zIndex = '8';
+        container.appendChild(character);
+
+        // Frame-by-frame walking animation with position + frame changes
+        const positions = [-400, -300, -200, -100, 0, 50, 100, 120];
+        let posIndex = 0;
+        let frameIndex = 0;
+        
+        character.style.left = positions[0] + 'px';
+        
+        const walkInterval = setInterval(() => {
+          posIndex++;
+          frameIndex = (frameIndex + 1) % walkFrames.length;
+          
+          if (posIndex >= positions.length) {
+            clearInterval(walkInterval);
+            return;
+          }
+          
+          character.src = walkFrames[frameIndex];
+          character.style.left = positions[posIndex] + 'px';
+        }, 400);
+      }, 2000);
+
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC2_CONFIG.onEnd) {
+          SC2_CONFIG.onEnd();
+        }
+      }, SC2_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>
