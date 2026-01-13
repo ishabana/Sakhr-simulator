@@ -1,0 +1,150 @@
+{
+  "duration": 14000,
+  "backgroundColor": "#000000",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "char1",
+        "image": "b1.png",
+        "position": {
+          "x": 500,
+          "y": "bottom-50px"
+        },
+        "width": "250px",
+        "zIndex": 20
+      }
+    },
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "char2",
+        "image": "b2.png",
+        "position": {
+          "x": 700,
+          "y": "bottom-50px"
+        },
+        "width": "250px",
+        "zIndex": 20
+      }
+    },
+    {
+      "time": 1000,
+      "action": "animateSprite",
+      "config": {
+        "id": "tank",
+        "frames": ["t.png", "t.png", "t.png", "t.png", "t.png", "t.png", "t.png", "t.png"],
+        "positions": [
+          {"x": 1300, "y": "bottom-50px"},
+          {"x": 1100, "y": "bottom-50px"},
+          {"x": 900, "y": "bottom-50px"},
+          {"x": 700, "y": "bottom-50px"},
+          {"x": 500, "y": "bottom-50px"},
+          {"x": 300, "y": "bottom-50px"},
+          {"x": 100, "y": "bottom-50px"},
+          {"x": -100, "y": "bottom-50px"}
+        ],
+        "frameDelay": 300,
+        "width": "250px",
+        "zIndex": 18
+      }
+    },
+    {
+      "time": 3500,
+      "action": "changeSprite",
+      "config": {
+        "id": "char2",
+        "image": "b2-2.png"
+      }
+    },
+    {
+      "time": 4000,
+      "action": "animateSprite",
+      "config": {
+        "id": "tankReverse",
+        "frames": ["t.png", "t.png", "t.png", "t.png", "t.png", "t.png", "t.png", "t.png"],
+        "positions": [
+          {"x": -100, "y": "bottom-50px"},
+          {"x": 100, "y": "bottom-50px"},
+          {"x": 300, "y": "bottom-50px"},
+          {"x": 500, "y": "bottom-50px"},
+          {"x": 700, "y": "bottom-50px"},
+          {"x": 900, "y": "bottom-50px"},
+          {"x": 1100, "y": "bottom-50px"},
+          {"x": 1300, "y": "bottom-50px"}
+        ],
+        "frameDelay": 300,
+        "width": "250px",
+        "zIndex": 18
+      }
+    },
+    {
+      "time": 4000,
+      "action": "animateSprite",
+      "config": {
+        "id": "bg1",
+        "frames": ["1.png", "1.png", "1.png", "1.png", "1.png", "1.png", "1.png", "1.png"],
+        "positions": [
+          {"x": -400, "y": 0},
+          {"x": 0, "y": 0},
+          {"x": 400, "y": 0},
+          {"x": 800, "y": 0},
+          {"x": 1200, "y": 0},
+          {"x": 1600, "y": 0},
+          {"x": 2000, "y": 0},
+          {"x": 2400, "y": 0}
+        ],
+        "frameDelay": 300,
+        "width": "1400px",
+        "zIndex": 3
+      }
+    },
+    {
+      "time": 6400,
+      "action": "animateSprite",
+      "config": {
+        "id": "bg2",
+        "frames": ["2.png", "2.png", "2.png", "2.png", "2.png", "2.png", "2.png", "2.png"],
+        "positions": [
+          {"x": -400, "y": 0},
+          {"x": 0, "y": 0},
+          {"x": 400, "y": 0},
+          {"x": 800, "y": 0},
+          {"x": 1200, "y": 0},
+          {"x": 1600, "y": 0},
+          {"x": 2000, "y": 0},
+          {"x": 2400, "y": 0}
+        ],
+        "frameDelay": 300,
+        "width": "1400px",
+        "zIndex": 3
+      }
+    },
+    {
+      "time": 8800,
+      "action": "animateSprite",
+      "config": {
+        "id": "bg3",
+        "frames": ["3.png", "3.png", "3.png", "3.png", "3.png", "3.png", "3.png", "3.png"],
+        "positions": [
+          {"x": -400, "y": 0},
+          {"x": 0, "y": 0},
+          {"x": 400, "y": 0},
+          {"x": 800, "y": 0},
+          {"x": 1200, "y": 0},
+          {"x": 1600, "y": 0},
+          {"x": 2000, "y": 0},
+          {"x": 2400, "y": 0}
+        ],
+        "frameDelay": 300,
+        "width": "1400px",
+        "zIndex": 3
+      }
+    }
+  ]
+}
