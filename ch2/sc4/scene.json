@@ -1,0 +1,90 @@
+{
+  "duration": 13000,
+  "backgroundColor": "#3187f8",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 1000,
+      "action": "animateSprite",
+      "config": {
+        "id": "bg1",
+        "frames": ["bg1.png", "bg1.png", "bg1.png", "bg1.png", "bg1.png", "bg1.png", "bg1.png", "bg1.png"],
+        "positions": [
+          {"x": -900, "y": 200},
+          {"x": -750, "y": 200},
+          {"x": -600, "y": 200},
+          {"x": -450, "y": 200},
+          {"x": -300, "y": 200},
+          {"x": -150, "y": 200},
+          {"x": -50, "y": 200},
+          {"x": 0, "y": 200}
+        ],
+        "frameDelay": 250,
+        "width": "900px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 4000,
+      "action": "changeSprite",
+      "config": {
+        "id": "bg1",
+        "image": "bg2.png"
+      }
+    },
+    {
+      "time": 5000,
+      "action": "animateSprite",
+      "config": {
+        "id": "bg2slide",
+        "frames": ["bg2.png", "bg2.png", "bg2.png", "bg2.png", "bg2.png", "bg2.png"],
+        "positions": [
+          {"x": 0, "y": 200},
+          {"x": 70, "y": 200},
+          {"x": 140, "y": 200},
+          {"x": 210, "y": 200},
+          {"x": 280, "y": 200},
+          {"x": 420, "y": 200}
+        ],
+        "frameDelay": 250,
+        "width": "900px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 7000,
+      "action": "showSprite",
+      "config": {
+        "id": "character",
+        "image": "1.png",
+        "position": {
+          "x": "left-50px",
+          "y": "bottom-150px"
+        },
+        "width": "350px",
+        "zIndex": 10
+      }
+    },
+    {
+      "time": 7500,
+      "action": "showText",
+      "config": {
+        "id": "counter",
+        "text": "٨٠٠٠٠٠",
+        "type": "overlay",
+        "position": {
+          "x": "center",
+          "y": "80px"
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "fontSize": "72px",
+          "fontWeight": "bold",
+          "textShadow": "3px 3px 6px rgba(0,0,0,0.5)"
+        }
+      }
+    }
+  ]
+}
