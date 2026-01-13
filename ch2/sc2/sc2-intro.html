@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC2 - Map Reveal and Scrolling Flags</title>
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../../design-system/fonts.css">
+  <link rel="stylesheet" href="../../../design-system/tokens.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #808080;
+      overflow: hidden;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #808080;
+    }
+
+    .flags-row {
+      position: absolute;
+      top: 100px;
+      left: 0;
+      display: flex;
+      gap: 30px;
+      z-index: 8;
+    }
+
+    .flag {
+      width: 60px;
+      height: 45px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+
+  <script>
+    // Scene 2 configuration
+    const SC2_CONFIG = {
+      "duration": 15000,
+      "backgroundColor": "#808080",
+      "autoAdvance": false
+    };
+
+    // Flags list
+    const flags = ['egypt.png', 'iraq.png', 'jordan.png', 'kuwait.png', 'lybia.png', 'palestine.png', 'saudi.png'];
+    let flagsRow = null;
+    let flagsInterval = null;
+    let currentFlagX = 0;
+
+    // Add callback to notify parent when scene ends
+    SC2_CONFIG.onEnd = () => {
+      console.log('SC2 ended');
+      if (flagsInterval) clearInterval(flagsInterval);
+      setTimeout(() => {
+        window.parent.postMessage('sc2-complete', '*');
+      }, 1000);
+    };
+
+    // Frame-by-frame map reveal from bottom up
+    function revealMapFrameByFrame(mapElement) {
+      const totalHeight = 400;
+      let currentHeight = 0;
+      const stepSize = 30;
+      const frameDelay = 100;
+      
+      mapElement.style.clipPath = 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)';
+      
+      const interval = setInterval(() => {
+        currentHeight += stepSize;
+        const topPercent = 100 - (currentHeight / totalHeight * 100);
+        if (topPercent <= 0) {
+          mapElement.style.clipPath = 'none';
+          clearInterval(interval);
+          return;
+        }
+        mapElement.style.clipPath = `polygon(0 ${topPercent}%, 100% ${topPercent}%, 100% 100%, 0 100%)`;
+      }, frameDelay);
+    }
+
+    // Frame-by-frame scrolling flags from left to right
+    function scrollFlagsFrameByFrame() {
+      const stepSize = 40;
+      const frameDelay = 200;
+      
+      flagsInterval = setInterval(() => {
+        currentFlagX += stepSize;
+        if (currentFlagX > 1400) {
+          currentFlagX = -800; // Reset to loop
+        }
+        if (flagsRow) {
+          flagsRow.style.left = currentFlagX + 'px';
+        }
+      }, frameDelay);
+    }
+
+    // Play scene
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('../../audio/music/ch2-theme.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC2: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = SC2_CONFIG.backgroundColor;
+
+      // Time 0: Show front.png
+      const front = document.createElement('img');
+      front.src = 'front.png';
+      front.className = 'sprite';
+      front.style.width = '1100px';
+      front.style.left = '50%';
+      front.style.transform = 'translateX(-50%)';
+      front.style.bottom = '0';
+      front.style.zIndex = '10';
+      container.appendChild(front);
+
+      // Time 1500: Map reveals from bottom-up frame by frame
+      setTimeout(() => {
+        const map = document.createElement('img');
+        map.src = 'map.png';
+        map.className = 'sprite';
+        map.style.width = '500px';
+        map.style.left = '50%';
+        map.style.transform = 'translateX(-50%)';
+        map.style.top = '0';
+        map.style.zIndex = '5';
+        container.appendChild(map);
+        
+        revealMapFrameByFrame(map);
+      }, 1500);
+
+      // Time 4000: Flags start scrolling frame by frame left to right
+      setTimeout(() => {
+        flagsRow = document.createElement('div');
+        flagsRow.className = 'flags-row';
+        flagsRow.style.left = '-800px';
+        
+        // Add flags twice for seamless loop
+        [...flags, ...flags].forEach(flag => {
+          const flagImg = document.createElement('img');
+          flagImg.src = flag;
+          flagImg.className = 'flag';
+          flagsRow.appendChild(flagImg);
+        });
+        
+        container.appendChild(flagsRow);
+        scrollFlagsFrameByFrame();
+      }, 4000);
+
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC2_CONFIG.onEnd) {
+          SC2_CONFIG.onEnd();
+        }
+      }, SC2_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

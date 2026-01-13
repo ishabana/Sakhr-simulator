@@ -1,0 +1,47 @@
+{
+  "duration": 15000,
+  "backgroundColor": "#808080",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "front",
+        "image": "front.png",
+        "position": {
+          "x": "center",
+          "y": "bottom-0"
+        },
+        "width": "1100px",
+        "zIndex": 10
+      }
+    },
+    {
+      "time": 1500,
+      "action": "showSprite",
+      "config": {
+        "id": "map",
+        "image": "map.png",
+        "position": {
+          "x": "center",
+          "y": "top-0"
+        },
+        "width": "500px",
+        "zIndex": 5,
+        "entryEffect": "revealFromBottom"
+      }
+    },
+    {
+      "time": 4000,
+      "action": "startScrollingFlags",
+      "config": {
+        "flags": ["egypt.png", "iraq.png", "jordan.png", "kuwait.png", "lybia.png", "palestine.png", "saudi.png"],
+        "width": "60px",
+        "zIndex": 8
+      }
+    }
+  ]
+}
