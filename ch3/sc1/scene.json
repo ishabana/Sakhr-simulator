@@ -1,0 +1,57 @@
+{
+  "duration": 10000,
+  "backgroundColor": "#000000",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "front",
+        "image": "front.png",
+        "position": {"x": "center", "y": "center"},
+        "width": "800px",
+        "zIndex": 10
+      }
+    },
+    {
+      "time": 1500,
+      "action": "animateSprite",
+      "config": {
+        "id": "book",
+        "frames": ["book.png", "book.png", "book.png", "book.png", "book.png", "book.png", "book.png", "book.png"],
+        "positions": [
+          {"x": 1300, "y": 400},
+          {"x": 1100, "y": 400},
+          {"x": 900, "y": 400},
+          {"x": 700, "y": 400},
+          {"x": 500, "y": 400},
+          {"x": 300, "y": 400},
+          {"x": 100, "y": 400},
+          {"x": -100, "y": 400}
+        ],
+        "frameDelay": 300,
+        "width": "300px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 4000,
+      "action": "changeSprite",
+      "config": {
+        "id": "front",
+        "image": "front-2.png"
+      }
+    },
+    {
+      "time": 6500,
+      "action": "changeSprite",
+      "config": {
+        "id": "front",
+        "image": "front-3.png"
+      }
+    }
+  ]
+}
