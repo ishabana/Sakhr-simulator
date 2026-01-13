@@ -5,33 +5,36 @@
 See: .planning/PROJECT.md (updated 2026-01-11)
 
 **Core value:** Smooth, lag-free playback on the Raspberry Pi
-**Current focus:** Phase 1 — Complete Chapter 1
+**Current focus:** Phase 4 — Chapter 4
 
 ## Current Position
 
-Phase: 1 of 5 (Complete Chapter 1)
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-11 — Completed 01-01-FIX.md (UAT fixes)
+Phase: REVISION (Comprehensive fixes for Chapters 2-4)
+Plan: REVISION-COMPREHENSIVE (completed)
+Status: Complete
+Last activity: 2026-01-13 — Fixed critical proportion, layering, and positioning issues across 5 scenes
 
-Progress: █░░░░░░░░░ 8%
+Progress: █████░░░░ 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 8h 17m
-- Total execution time: 8.3 hours
+- Total plans completed: 8
+- Average duration: 1h 8m
+- Total execution time: 9.2 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1 | 1 | 8.3h | 8.3h |
+| 1 | 3 | 8.5h | 2h 50m |
+| 2 | 2 | 0.1h | 3m |
+| 3 | 2 | 0.1h | 3m |
+| REVISION | 1 | 0.5h | 30m |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (8.3h)
-- Trend: First plan completed
+- Last 5 plans: 01-03 (22s), 02-01 (5m), 02-02 (52s), REVISION-COMPREHENSIVE (30m)
+- Trend: Revision work completed efficiently with atomic commits
 
 ## Accumulated Context
 
@@ -52,6 +55,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-11
-Stopped at: Completed 01-01-PLAN.md (Create sc6 scene)
+Last session: 2026-01-13
+Stopped at: Completed REVISION-COMPREHENSIVE plan (fixed 10 files across 5 scenes)
 Resume file: None
+Next: Resume Phase 4 (Chapter 4) or continue with Phase 3 completion
