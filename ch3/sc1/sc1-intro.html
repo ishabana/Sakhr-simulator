@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC1 - Layered Sliding Animation</title>
+
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../../design-system/fonts.css">
+  <link rel="stylesheet" href="../../../design-system/tokens.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+
+  <script>
+    // Scene 1 configuration - Layered sliding from right to left frame by frame
+    const SC1_CONFIG = {
+      "duration": 10000,
+      "backgroundColor": "#000000",
+      "autoAdvance": false
+    };
+
+    // Add callback to notify parent when scene ends
+    SC1_CONFIG.onEnd = () => {
+      console.log('SC1 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc1-complete', '*');
+      }, 1000);
+    };
+
+    // Frame-by-frame slide helper
+    function slideFrameByFrame(element, positions, frameDelay, onComplete) {
+      let posIndex = 0;
+      element.style.left = positions[0] + 'px';
+      
+      const interval = setInterval(() => {
+        posIndex++;
+        if (posIndex >= positions.length) {
+          clearInterval(interval);
+          if (onComplete) onComplete();
+          return;
+        }
+        element.style.left = positions[posIndex] + 'px';
+      }, frameDelay);
+      
+      return interval;
+    }
+
+    // Play scene
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('../../audio/music/ch3-theme.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC1: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = SC1_CONFIG.backgroundColor;
+
+      // Time 0: Show front.png centered
+      const front = document.createElement('img');
+      front.src = 'front.png';
+      front.className = 'sprite';
+      front.style.width = '800px';
+      front.style.left = '50%';
+      front.style.top = '50%';
+      front.style.transform = 'translate(-50%, -50%)';
+      front.style.zIndex = '10';
+      container.appendChild(front);
+
+      // Time 1500: Book appears from the right
+      setTimeout(() => {
+        const book = document.createElement('img');
+        book.id = 'book';
+        book.src = 'book.png';
+        book.className = 'sprite';
+        book.style.width = '300px';
+        book.style.top = '50%';
+        book.style.transform = 'translateY(-50%)';
+        book.style.zIndex = '5';
+        container.appendChild(book);
+
+        // Book slides from right to left (behind front)
+        const bookPositions = [1300, 1100, 900, 700, 500, 300, 100, -100];
+        slideFrameByFrame(book, bookPositions, 300);
+      }, 1500);
+
+      // Time 4000: Change front image to front-2 (no sliding!)
+      setTimeout(() => {
+        front.src = 'front-2.png';
+      }, 4000);
+
+      // Time 6500: Change front image to front-3 (no sliding!)
+      setTimeout(() => {
+        front.src = 'front-3.png';
+      }, 6500);
+
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC1_CONFIG.onEnd) {
+          SC1_CONFIG.onEnd();
+        }
+      }, SC1_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>
