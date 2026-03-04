@@ -1,4 +1,4 @@
-# Sakhr Simulator — صخر سيميولايتر
+# Sakhr Simulator — محاكاة صخر
 
 <p align="center">
   <img src="sharekh.png" alt="Sakhr Simulator" width="800"/>
@@ -6,6 +6,8 @@
 
 <p align="center">
   <em>An interactive animated documentary about Sakhr — the Arab computer that arabized the world</em>
+<br/><br/>
+Designed, written, and commissioned by <a href="https://kayfa-ta.com/">Kayfa Ta</a>
 </p>
 
 ---
