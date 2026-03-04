@@ -1,0 +1,8 @@
+{
+  "duration": 8500,
+  "backgroundColor": "#000000",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": []
+}

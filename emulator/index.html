@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - اختر برنامجًا</title>
+
+  <!-- Sakhr Design System -->
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--color-black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-arabic);
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      font-smooth: never;
+    }
+
+    /* Fixed 1280x800 container */
+    .screen-wrapper {
+      width: 1280px;
+      height: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-black);
+    }
+
+    .menu-screen {
+      width: 700px;
+      max-height: 750px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .menu-title {
+      text-align: center;
+      color: var(--accent-primary);
+      font-size: 42px;
+      font-family: var(--font-arabic);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: 20px;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      font-smooth: never;
+      text-rendering: geometricPrecision;
+    }
+
+    .menu-list {
+      background: #000000;
+      border: 4px solid #FFFFFF;
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .menu-item {
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: transparent;
+      border: 2px solid transparent;
+      color: var(--text-primary);
+      font-family: var(--font-arabic);
+      font-size: 26px;
+      cursor: pointer;
+      transition: all var(--duration-quick) var(--ease-linear);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      font-smooth: never;
+      text-rendering: geometricPrecision;
+    }
+
+    .menu-item:hover {
+      background: transparent;
+      border-color: #FFFFFF;
+      color: #00FF00;
+    }
+
+    .menu-item.selected {
+      background: transparent;
+      color: #00FF00;
+      border-color: #FFFFFF;
+    }
+
+    .menu-item-title {
+      font-weight: var(--font-weight-bold);
+    }
+
+    .menu-item-filename {
+      font-family: var(--font-english);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      direction: ltr;
+    }
+
+    .menu-item.selected .menu-item-filename {
+      color: #00FF00;
+      opacity: 0.8;
+    }
+
+    .menu-item-filename {
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: grayscale;
+      font-smooth: never;
+      text-rendering: geometricPrecision;
+    }
+
+    .instruction {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 18px;
+      font-family: var(--font-arabic);
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+
+    .cursor-indicator {
+      color: #00FF00;
+      margin-left: var(--space-2);
+      animation: blink 1s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed 1280x800 screen wrapper -->
+  <div class="screen-wrapper">
+    <!-- Menu Screen -->
+    <div class="menu-screen">
+    <h1 class="menu-title pixel-text">محاكي صخر</h1>
+
+    <div class="menu-list">
+      <div class="menu-item selected pixel-text" data-index="0" data-rom-id="alibaba">
+        <div>
+          <div class="menu-item-title">علي بابا</div>
+        </div>
+        <span class="cursor-indicator">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="1" data-rom-id="discover-computer">
+        <div>
+          <div class="menu-item-title">اكتشف الحاسوب</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="2" data-rom-id="energy">
+        <div>
+          <div class="menu-item-title">الطاقة</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="3" data-rom-id="ibn-sina">
+        <div>
+          <div class="menu-item-title">ابن سينا</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="4" data-rom-id="kofi">
+        <div>
+          <div class="menu-item-title">كوفي</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="5" data-rom-id="proverbs">
+        <div>
+          <div class="menu-item-title">الأمثال والحكم</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+
+      <div class="menu-item pixel-text" data-index="6" data-rom-id="test-iq">
+        <div>
+          <div class="menu-item-title">اختبر ذكاءك</div>
+        </div>
+        <span class="cursor-indicator" style="opacity: 0">◄</span>
+      </div>
+    </div>
+
+    <p class="instruction pixel-text">
+      استخدم ↑↓ للتنقل • اضغط ENTER للتشغيل<br>
+      للرجوع للقائمة اضغط Ctrl+X
+    </p>
+    </div>
+  </div>
+
+  <script>
+    // ROM Database
+    const ROMS = [
+      {
+        id: 'alibaba',
+        filename: 'alibaba.rom',
+        title: 'علي بابا',
+        path: 'roms/alibaba.rom'
+      },
+      {
+        id: 'discover-computer',
+        filename: 'discover_the_computer.rom',
+        title: 'اكتشف الحاسوب',
+        path: 'roms/discover_the_computer.rom'
+      },
+      {
+        id: 'energy',
+        filename: 'energy.rom',
+        title: 'الطاقة',
+        path: 'roms/energy.rom'
+      },
+      {
+        id: 'ibn-sina',
+        filename: 'ibn_sina1.rom',
+        title: 'ابن سينا',
+        path: 'roms/ibn_sina1.rom'
+      },
+      {
+        id: 'kofi',
+        filename: 'kofi.rom',
+        title: 'كوفي',
+        path: 'roms/kofi.rom'
+      },
+      {
+        id: 'proverbs',
+        filename: 'proverbs_and_says.rom',
+        title: 'الأمثال والحكم',
+        path: 'roms/proverbs_and_says.rom'
+      },
+      {
+        id: 'test-iq',
+        filename: 'test_your_iq.rom',
+        title: 'اختبر ذكاءك',
+        path: 'roms/test_your_iq.rom'
+      }
+    ];
+
+    let selectedIndex = 0;
+    const menuItems = document.querySelectorAll('.menu-item');
+
+    // Update visual selection
+    function updateSelection() {
+      menuItems.forEach((item, index) => {
+        const cursor = item.querySelector('.cursor-indicator');
+        if (index === selectedIndex) {
+          item.classList.add('selected');
+          cursor.style.opacity = '1';
+        } else {
+          item.classList.remove('selected');
+          cursor.style.opacity = '0';
+        }
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      switch(e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          selectedIndex = Math.min(selectedIndex + 1, menuItems.length - 1);
+          updateSelection();
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          selectedIndex = Math.max(selectedIndex - 1, 0);
+          updateSelection();
+          break;
+
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          selectROM(selectedIndex);
+          break;
+      }
+    });
+
+    // Mouse click selection
+    menuItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        selectedIndex = index;
+        updateSelection();
+        selectROM(index);
+      });
+
+      item.addEventListener('mouseenter', () => {
+        selectedIndex = index;
+        updateSelection();
+      });
+    });
+
+    // Global audio activation flag
+    let audioActivated = localStorage.getItem('sakhrAudioActivated') === 'true';
+
+    // Activate audio ONCE on any user interaction
+    function activateAudio() {
+      if (audioActivated) {
+        console.log('[Audio] Already activated - skipping');
+        return;
+      }
+
+      console.log('[Audio] ACTIVATING AUDIO NOW...');
+
+      try {
+        // Method 1: AudioContext (most reliable for WebAudio)
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          const ctx = new AudioContextClass();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.value = 0.001;
+          osc.frequency.value = 440;
+          osc.start(0);
+          osc.stop(ctx.currentTime + 0.001);
+          console.log('[Audio] ✓ AudioContext activated');
+        }
+
+        // Method 2: HTML5 Audio (backup)
+        const audio = new Audio();
+        audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+        const playPromise = audio.play();
+        if (playPromise) {
+          playPromise.then(() => {
+            console.log('[Audio] ✓ HTML5 Audio activated');
+          }).catch(e => {
+            console.log('[Audio] HTML5 play blocked:', e.message);
+          });
+        }
+
+        // Mark as activated
+        audioActivated = true;
+        localStorage.setItem('sakhrAudioActivated', 'true');
+        localStorage.setItem('sakhrAudioActivatedTime', new Date().toISOString());
+        console.log('[Audio] ✓✓✓ ACTIVATION COMPLETE AND SAVED ✓✓✓');
+      } catch (error) {
+        console.error('[Audio] Activation failed:', error);
+      }
+    }
+
+    // Select and load ROM
+    function selectROM(index) {
+      const rom = ROMS[index];
+      console.log('[Menu] ROM selected:', rom);
+
+      // Activate audio on first click
+      activateAudio();
+
+      // Store in session storage
+      sessionStorage.setItem('selectedROM', JSON.stringify(rom));
+      console.log('[Menu] Stored in session storage');
+
+      // Navigate to emulator
+      window.location.href = 'emulator.html';
+    }
+
+    // Auto-activate on ANY click anywhere on page
+    document.addEventListener('click', activateAudio, { once: true });
+
+    // Auto-activate on ANY keypress
+    document.addEventListener('keydown', activateAudio, { once: true });
+
+    // Initialize
+    updateSelection();
+
+    // Log status on load
+    if (audioActivated) {
+      console.log('[Audio] ✓ Audio already activated from previous session');
+    } else {
+      console.log('[Audio] Waiting for user interaction to activate audio...');
+    }
+  </script>
+</body>
+</html>

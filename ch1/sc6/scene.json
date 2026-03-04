@@ -1,12 +1,12 @@
 {
-  "duration": 15000,
+  "duration": 9000,
   "background": "team.png",
   "autoAdvance": true,
   "advanceDelay": 1000,
 
   "timeline": [
     {
-      "time": 8000,
+      "time": 1000,
       "action": "animateSprite",
       "config": {
         "id": "walkingChar",

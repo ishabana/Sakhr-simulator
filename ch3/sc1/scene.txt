@@ -1,0 +1,2 @@
+1- scene starts with bg.png and front.png
+2- character walkes in from the outside of the canvas until the very beining of the canvas following frames 1, 2, 3.png

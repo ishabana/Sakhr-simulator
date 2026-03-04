@@ -1,0 +1,136 @@
+/* Animation Base Styles - 1280x800 Resolution */
+
+body {
+  background: #1A1A1A;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* Screen Container - Fixed 1280x800 */
+.screen-container {
+  position: relative;
+  width: 1280px;
+  height: 800px;
+  background: #000000;
+  overflow: hidden;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Scene Container - Full screen background */
+#scene-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Background Image - Full screen */
+.scene-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  z-index: 1;
+}
+
+/* Sprite Layer */
+.sprite {
+  position: absolute;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  z-index: 10;
+}
+
+/* Text Overlay Layer */
+.text-overlay {
+  position: absolute;
+  z-index: 20;
+  color: #FFFFFF;
+  font-family: 'FF Sakhr', monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* English text overlay - Use MSX International font */
+.text-overlay.english-text,
+.text-overlay[dir="ltr"] {
+  font-family: 'MSX International', monospace;
+  direction: ltr;
+}
+
+/* Blinking Cursor */
+.cursor {
+  display: inline-block;
+  width: 12px;
+  height: 24px;
+  background: #FFFFFF;
+  margin-right: 4px;
+  animation: cursorBlink 1060ms steps(1) infinite;
+  vertical-align: middle;
+}
+
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  50.1%, 100% { opacity: 0; }
+}
+
+/* Control Buttons - Decorative */
+.controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  background: transparent;
+  border: 2px solid #FFFFFF;
+  color: #FFFFFF;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: 'FF Sakhr', monospace;
+  cursor: pointer;
+  transition: none;
+}
+
+.btn:hover {
+  background: #FFFFFF;
+  color: #2424B6;
+}
+
+.btn:active {
+  background: #00DBDB;
+  border-color: #00DBDB;
+  color: #000000;
+}
+
+/* Hide controls option */
+.controls.hidden {
+  display: none;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-family: 'FF Sakhr', monospace;
+  font-size: 24px;
+}

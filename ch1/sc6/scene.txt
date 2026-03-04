@@ -1,0 +1,4 @@
+sc6-
+
+1-the scene openes with team as the BG
+2- character moves from outside of the screen from left to right following 1, 2, 3, 4 .png

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC2 - Moving Sprites Scene</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 2 configuration
+    const SC2_CONFIG = {
+      "duration": 15000,
+      "backgroundColor": "#000000",
+      "autoAdvance": false
+    };
+    // Counter animation frames
+    const counterFrames = ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.png', '8.png', '9.png'];
+    let counterIndex = 0;
+    let counterInterval = null;
+    let spawnInterval = null;
+    // Add callback to notify parent when scene ends
+    SC2_CONFIG.onEnd = () => {
+      console.log('SC2 ended');
+      // Cleanup
+      if (counterInterval) clearInterval(counterInterval);
+      if (spawnInterval) clearInterval(spawnInterval);
+      setTimeout(() => {
+        window.parent.postMessage('sc2-complete', '*');
+      }, 1000);
+    };
+    // Play scene
+    window.addEventListener('load', () => {
+      // Create and play scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = '#000000';
+      // Show b1.png (character in the back on right)
+      const machine1 = document.createElement('img');
+      machine1.src = 'b1.png';
+      machine1.className = 'sprite';
+      machine1.style.right = '980px';
+      machine1.style.bottom = '100px';
+      machine1.style.width = '350px';
+      machine1.style.zIndex = '5';
+      container.appendChild(machine1);
+      // Show b2.png (character in the back on left)
+      const machine2 = document.createElement('img');
+      machine2.src = 'b2.png';
+      machine2.className = 'sprite';
+      machine2.style.left = '10px';
+      machine2.style.bottom = '100px';
+      machine2.style.width = '500px';
+      machine2.style.zIndex = '5';
+      container.appendChild(machine2);
+      // front.png - full screen, in front of everything (but behind m.png)
+      const front = document.createElement('img');
+      front.src = 'front.png';
+      front.className = 'sprite';
+      front.style.width = '1000px';
+      front.style.height = '100%';
+      front.style.left = '260px';
+      front.style.top = '80px';
+      front.style.objectFit = 'contain';
+      front.style.zIndex = '50';
+      container.appendChild(front);
+      // Start looping front.png through 1.png → 9.png
+      counterInterval = setInterval(() => {
+        counterIndex = (counterIndex + 1) % counterFrames.length;
+        front.src = counterFrames[counterIndex];
+      }, 800);
+      // Spawn m.png (money) that comes OUT of the screen (in front of front.png)
+      setTimeout(() => {
+        spawnMovingItem(container);
+        // Spawn new items periodically
+        spawnInterval = setInterval(() => {
+          spawnMovingItem(container);
+        }, 1500);
+      }, 1000);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC2_CONFIG.onEnd) {
+          SC2_CONFIG.onEnd();
+        }
+      }, SC2_CONFIG.duration);
+    });
+    // Spawn m.png (money) that comes out of screen, moves left to right, IN FRONT of front.png
+    function spawnMovingItem(container) {
+      const item = document.createElement('img');
+      item.src = 'm.png';
+      item.className = 'sprite';
+      item.style.width = '180px';
+      item.style.zIndex = '100';  // Higher than front.png (50)
+      item.style.top = '430px';   // Position near the monitor screen area
+      item.style.left = '330px'; // Start off-screen left
+      container.appendChild(item);
+      // Frame by frame movement left to right
+      const positions = [300, 450, 600, 750];
+      let posIndex = 0;
+      const moveInterval = setInterval(() => {
+        posIndex++;
+        if (posIndex >= positions.length) {
+          clearInterval(moveInterval);
+          item.remove();
+          return;
+        }
+        item.style.left = positions[posIndex] + 'px';
+      }, 250);
+    }
+  </script>
+</body>
+</html>

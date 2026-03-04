@@ -1,0 +1,4 @@
+1- scene starts with black background in canvas and by b1.png to the right of the canvas and b2.png to the left of the canvas
+2- front.png appears
+3- m.png coming out of the screen and moving from left to right frame by frame
+4-1, 2, 3, ...until 9.png starts looping while m.png is having a lot of them moving from the screen and disappearing when it reaches the other machine

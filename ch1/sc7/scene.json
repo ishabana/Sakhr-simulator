@@ -1,0 +1,27 @@
+{
+  "duration": 12000,
+  "background": "bg.png",
+  "backgroundEffect": {
+    "type": "wipeFromMiddle",
+    "duration": 2000
+  },
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 2500,
+      "action": "showSprite",
+      "config": {
+        "id": "characterLoop",
+        "frames": ["2.png"],
+        "loop": true,
+        "frameDelay": 500,
+        "position": {"x": "center", "y": "center"},
+        "entryEffect": "pixelAppear",
+        "entryDuration": 1500,
+        "zIndex": 10
+      }
+    }
+  ]
+}

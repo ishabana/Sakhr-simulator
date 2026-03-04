@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC5 - Hire Call to Action</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      Loading...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 5 configuration
+    const SC5_CONFIG = {
+      "duration": 10000,
+      "background": "bg.png",
+      "autoAdvance": false,
+      "timeline": [
+        {
+          "time": 0,
+          "action": "showSprite",
+          "config": {
+            "id": "image2",
+            "image": "2.png",
+            "position": {
+              "x": 250,
+              "y": 40
+            },
+            "height": "600px",
+            "zIndex": 2
+          }
+        },
+        {
+          "time": 1000,
+          "action": "animateSprite",
+          "config": {
+            "id": "image1",
+            "frames": ["1.png", "1.png", "1.png", "1.png", "1.png"],
+            "positions": [
+              {"x": 1280, "y": 60},
+              {"x": 1100, "y": 60},
+              {"x": 950, "y": 60},
+              {"x": 850, "y": 60}
+            ],
+            "frameDelay": 200,
+            "height": "530px",
+            "zIndex": 3
+          }
+        },
+        {
+          "time": 3500,
+          "action": "animateSprite",
+          "config": {
+            "id": "image3",
+            "frames": ["3.png", "3.png", "3.png", "3.png", "3.png", "3.png"],
+            "positions": [
+              {"x": -100, "y": 40},
+              {"x": 0, "y": 40},
+              {"x": 80, "y": 40},
+              {"x": 95, "y": 40}
+            ],
+            "frameDelay": 200,
+            "height": "600px",
+            "zIndex": 4
+          }
+        },
+        {
+          "time": 6000,
+          "action": "showText",
+          "config": {
+            "id": "hireCTA",
+            "text": "go for hire now!",
+            "type": "overlay",
+            "position": {
+              "x": "center",
+              "y": "15%"
+            },
+            "style": {
+              "color": "#000000",
+              "fontSize": "25px",
+              "fontWeight": "bold",
+              "fontFamily": "'MSX International', monospace",
+              "lineHeight": "1.5",
+              "textAlign": "center",
+              "direction": "ltr",
+              "textShadow": "none"
+            },
+            "animation": {
+              "type": "typewriter",
+              "speed": 100,
+              "showCursor": true
+            }
+          }
+        }
+      ]
+    };
+    // Add callback to notify parent when scene ends
+    SC5_CONFIG.onEnd = () => {
+      console.log('SC5 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc5-complete', '*');
+      }, 1000);
+    };
+    // Play intro sound
+    window.addEventListener('load', () => {
+      // Create and play scene
+      const container = document.getElementById('scene-container');
+      const scenePlayer = new ScenePlayer(SC5_CONFIG, container);
+      scenePlayer.play();
+    });
+  </script>
+</body>
+</html>

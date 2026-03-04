@@ -1,0 +1,6 @@
+1- scene starts with background color of canvas #3187f8
+2- bg1.png starts to slide in from left to right
+3- bg1.png turns into bg2.png
+4- bg2.png starts to slide from left to right until the left third of the canvas is empty
+5- 1.png appears in the empty third
+6- in Arabic above the whole thing with big bold sakhr font a number starts counting fast from 10000 till 800000

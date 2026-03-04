@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC6 - Image Sequence</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 6 configuration - Simple background sequence
+    const SC6_CONFIG = {
+      "duration": 8500,
+      "backgroundColor": "#000000",
+      "autoAdvance": false
+    };
+    // Add callback to notify parent when scene ends
+    SC6_CONFIG.onEnd = () => {
+      console.log('SC6 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc6-complete', '*');
+      }, 1000);
+    };
+    // Play intro sound
+    window.addEventListener('load', () => {
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      // Set initial background to 1.png
+      container.style.backgroundImage = 'url(1.png)';
+      container.style.backgroundSize = 'cover';
+      container.style.backgroundPosition = 'center';
+      container.style.backgroundRepeat = 'no-repeat';
+      // Change to 2.png after 2.5 seconds
+      setTimeout(() => {
+        container.style.backgroundImage = 'url(2.png)';
+      }, 2500);
+      // Change to 3.png after 5 seconds
+      setTimeout(() => {
+        container.style.backgroundImage = 'url(3.png)';
+      }, 5000);
+      // End scene after 7.5 seconds
+      setTimeout(() => {
+        if (SC6_CONFIG.onEnd) {
+          SC6_CONFIG.onEnd();
+        }
+      }, 7500);
+    });
+  </script>
+</body>
+</html>

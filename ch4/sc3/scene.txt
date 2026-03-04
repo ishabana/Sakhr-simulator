@@ -1,0 +1,6 @@
+1-scene starts with black background and b1.png and b2.png standing same position like the previous scene
+2- t.png slides frame by frame right to left behind everything.
+3- b2.png turns into b2-2.png
+4- t,png starts sliding left to right until it disappears again out of canvas at the same time 1.png starts sliding from the left edge left to right also frame by frame
+5- 2.png follows the sliding directly after 1.png with no delays as if they are the same scene
+6- 3.png slides directly right after 2.png they are the same scene

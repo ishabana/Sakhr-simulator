@@ -1,0 +1,3 @@
+1- scene starts with bg.png and front.png (no animation)
+2- Arabic text appears above saying "غامر بفلوسك..اذا نجحت…!"
+

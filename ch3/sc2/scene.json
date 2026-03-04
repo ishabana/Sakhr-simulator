@@ -1,5 +1,5 @@
 {
-  "duration": 10000,
+  "duration": 12000,
   "background": "bg.png",
   "autoAdvance": true,
   "advanceDelay": 1000,
@@ -9,35 +9,71 @@
       "time": 0,
       "action": "showSprite",
       "config": {
-        "id": "front",
-        "image": "front.png",
+        "id": "front2",
+        "image": "front-2.png",
         "position": {
           "x": "center",
-          "y": "bottom-0"
+          "y": "center"
         },
-        "width": "1000px",
+        "width": "600px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "front1",
+        "image": "front-1.png",
+        "position": {
+          "x": "center",
+          "y": "center"
+        },
+        "width": "1200px",
         "zIndex": 10
       }
     },
     {
       "time": 2000,
-      "action": "animateSprite",
+      "action": "zoomOutSprite",
       "config": {
-        "id": "walkingChar",
-        "frames": ["1.png", "2.png", "3.png", "1.png", "2.png", "3.png", "1.png", "2.png"],
-        "positions": [
-          {"x": -400, "y": "bottom-80px"},
-          {"x": -300, "y": "bottom-80px"},
-          {"x": -200, "y": "bottom-80px"},
-          {"x": -100, "y": "bottom-80px"},
-          {"x": 0, "y": "bottom-80px"},
-          {"x": 50, "y": "bottom-80px"},
-          {"x": 100, "y": "bottom-80px"},
-          {"x": 120, "y": "bottom-80px"}
-        ],
-        "frameDelay": 400,
-        "width": "300px",
-        "zIndex": 8
+        "id": "front1",
+        "startWidth": 1200,
+        "endWidth": 100,
+        "duration": 3000,
+        "hideAfter": true
+      }
+    },
+    {
+      "time": 6000,
+      "action": "changeSprite",
+      "config": {
+        "id": "front2",
+        "image": "front-3.png"
+      }
+    },
+    {
+      "time": 7000,
+      "action": "showText",
+      "config": {
+        "id": "narration",
+        "text": "عمل خارق!",
+        "type": "overlay",
+        "position": {
+          "x": "center",
+          "y": "80px"
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "fontSize": "48px",
+          "fontWeight": "bold",
+          "textShadow": "3px 3px 6px rgba(0,0,0,0.5)"
+        },
+        "animation": {
+          "type": "typewriter",
+          "speed": 100,
+          "showCursor": false
+        }
       }
     }
   ]

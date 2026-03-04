@@ -30,37 +30,38 @@ None - Vanilla JavaScript animation with established patterns
 
 Plans:
 - [x] 01-01: Create sc6 scene from prompt (scene.json, HTML player, add to scenes.json)
-- [ ] 01-02: Create sc7 scene from prompt (scene.json, HTML player, add to scenes.json)
-- [ ] 01-03: Update ch1-player-standalone.html to include sc6 and sc7 in scene sequence
+- [x] 01-02: Create sc7 scene from prompt (scene.json, HTML player, add to scenes.json)
+- [x] 01-03: Update ch1-player-standalone.html to include sc6 and sc7 in scene sequence
 
 ### Phase 2: Chapter 2
-**Goal**: Create complete Chapter 2 with all scenes
+**Goal**: Create complete Chapter 2 with all 4 scenes (sc1-sc4)
 **Depends on**: Phase 1
 **Research**: Unlikely (same patterns as Chapter 1)
-**Plans**: 2-3 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Plan chapter 2 structure and create initial scenes
-- [ ] 02-02: Complete remaining chapter 2 scenes
+- [x] 02-01: Create all 4 scenes (sc1-sc4) with scene.json and HTML players - raining effect, scrolling flags, wipe transitions, counting animation
+- [x] 02-02: Create ch2-player-standalone.html and scenes.json
 
 ### Phase 3: Chapter 3
-**Goal**: Create complete Chapter 3 with all scenes
+**Goal**: Create complete Chapter 3 with 4 scenes (sc1, sc2, sc3, sc5 - sc4 is empty)
 **Depends on**: Phase 2
 **Research**: Unlikely (established workflow)
-**Plans**: 2-3 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Plan chapter 3 structure and create initial scenes
-- [ ] 03-02: Complete remaining chapter 3 scenes
+- [ ] 03-01: Create all 4 scenes (sc1, sc2, sc3, sc5) with scene.json and HTML players - layered sliding, walking, zoom effects, wipe transitions
+- [ ] 03-02: Create ch3-player-standalone.html and scenes.json
 
 ### Phase 4: Chapter 4
-**Goal**: Complete all scenes for Chapter 4
+**Goal**: Complete all scenes for Chapter 4 (sc1-sc4)
 **Depends on**: Phase 3
 **Research**: Unlikely (established workflow)
-**Plans**: TBD (based on scene count)
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Create Chapter 4 scenes (count TBD based on prompts)
+- [ ] 04-01: Create all 4 scenes (sc1-sc4) with scene.json and HTML players - static text, multiple moving sprites, complex sliding sequences
+- [ ] 04-02: Create ch4-player-standalone.html and scenes.json
 
 ### Phase 5: Chapter Players & Polish
 **Goal**: Create standalone chapter players for all chapters with start button for audio permission, optimize for Raspberry Pi
@@ -76,8 +77,8 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Complete Chapter 1 | 1/3 | In progress | - |
-| 2. Chapter 2 | 0/2-3 | Not started | - |
-| 3. Chapter 3 | 0/2-3 | Not started | - |
-| 4. Chapter 4 | 0/TBD | Not started | - |
+| 1. Complete Chapter 1 | 3/3 | Complete | 2026-01-12 |
+| 2. Chapter 2 | 2/2 | Complete | 2026-01-12 |
+| 3. Chapter 3 | 0/2 | Not started | - |
+| 4. Chapter 4 | 0/2 | Not started | - |
 | 5. Chapter Players & Polish | 0/2 | Not started | - |

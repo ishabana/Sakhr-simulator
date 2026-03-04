@@ -1,0 +1,41 @@
+/* FF SAKHR - Arabic Font */
+@font-face {
+  font-family: 'FF Sakhr';
+  src: local('FF Sakhr'),
+       local('FFSakhr-Regular'),
+       url('fonts/ff-sakhr/FFSakhr-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FF Sakhr';
+  src: local('FF Sakhr Bold'),
+       local('FFSakhr-Bold'),
+       url('fonts/ff-sakhr/FFSakhr-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* MSX INTERNATIONAL - English Font */
+@font-face {
+  font-family: 'MSX International';
+  src: local('MSX International'),
+       local('MSX-International'),
+       url('fonts/msx-international/msx-international.otf.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Konami MSX';
+  src: local('Konami MSX'),
+       local('Konami-MSX'),
+       url('fonts/msx-international/konami-msx-font.otf.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

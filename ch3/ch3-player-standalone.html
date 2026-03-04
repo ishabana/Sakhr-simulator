@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - الفصل الثالث</title>
+
+  <!-- Embedded Fonts CSS -->
+  <link rel="stylesheet" href="../fonts.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../styles/animation-base.css">
+  <link rel="stylesheet" href="../styles/text-boxes.css">
+</head>
+<body>
+  <!-- MSX Screen Container (1280x800) -->
+  <div class="screen-container">
+    <!-- Start Screen (shown once at beginning) -->
+    <div id="start-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;">
+      <div style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 32px; margin-bottom: 40px; text-align: center;">
+        صخر - الفصل الثالث
+      </div>
+      <button onclick="showMenu()" style="background: #2424B6; border: 3px solid #FFFFFF; color: #FFFFFF; padding: 20px 60px; font-size: 24px; font-family: 'FF Sakhr', monospace; cursor: pointer;">
+        ▶ ابدأ
+      </button>
+    </div>
+
+    <!-- Menu Screen -->
+    <div id="menu-screen" style="position: absolute; top: 0; left: 0; width: 1280px; height: 800px; background: #000000; display: none; z-index: 999;">
+      <div style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); width: 900px;">
+        <div id="menu-header" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 30px; text-align: right; line-height: 1.1;">
+          كيف تـ تقدم "عالم صخر"<br>
+          محاكاة شكلية وبرمجية لتخيل مختصر لتاريخ شركة العالمية وبرمجيات صخر
+        </div>
+      </div>
+      <div style="position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 900px;">
+        <div id="menu-prompt" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 25px; text-align: right;">اختر رقمــاً</div>
+      </div>
+      <div style="position: absolute; top: 50%; right: 5%; transform: translate(50%, -50%); width: 600px; margin-right: 500px;">
+        <div id="menu-item-1" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-2" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-3" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-4" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+      </div>
+    </div>
+
+
+    <!-- Scene Navigation Control -->
+    <div class="controls">
+      <button class="btn arabic-text" onclick="nextScene()">التالي ►</button>
+    </div>
+
+    <!-- Scene Container - Scenes render here -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+
+  <script>
+    // Global scene management
+    let currentSceneIndex = 0;
+    const scenes = ['sc1', 'sc2', 'sc3']; // Scene sequence
+    let activeTimeouts = [];
+    let activeIntervals = [];
+
+    // Timer tracking wrapper functions
+    function addTimeout(callback, delay) {
+      const id = setTimeout(callback, delay);
+      activeTimeouts.push(id);
+      return id;
+    }
+
+    function addInterval(callback, delay) {
+      const id = setInterval(callback, delay);
+      activeIntervals.push(id);
+      return id;
+    }
+
+    // Cleanup function to clear all running timers and reset scene
+    function cleanupScene() {
+      console.log('Cleaning up scene...');
+
+      // Clear all timeouts
+      activeTimeouts.forEach(id => clearTimeout(id));
+      activeTimeouts = [];
+
+      // Clear all intervals
+      activeIntervals.forEach(id => clearInterval(id));
+      activeIntervals = [];
+
+      // Reset container (iframe will be removed automatically)
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.style.background = '';
+    }
+
+    // Typewriter effect
+    function typewriterEffect(elementId, text, speed, callback) {
+      const element = document.getElementById(elementId);
+      let index = 0;
+      element.textContent = '';
+
+      const interval = setInterval(() => {
+        if (index < text.length) {
+          element.textContent += text.charAt(index);
+          index++;
+        } else {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    function showMenu() {
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('menu-screen').style.display = 'block';
+
+      const chapterNumber = 3; // Chapter 3
+
+      // Reset all menu items - clear content and reset colors
+      for (let i = 1; i <= 4; i++) {
+        const menuItem = document.getElementById('menu-item-' + i);
+        menuItem.textContent = '';
+        menuItem.style.color = '#FFFFFF';
+      }
+
+      // Typewriter only menu items
+      setTimeout(() => typewriterEffect('menu-item-1', '1-البداية', 50), 200);
+      setTimeout(() => typewriterEffect('menu-item-2', '2-الانتشار', 50), 600);
+      setTimeout(() => typewriterEffect('menu-item-3', '3-الإجازة', 50), 1000);
+      setTimeout(() => typewriterEffect('menu-item-4', '4-القضية', 50, () => {
+        // After typewriter completes, wait 2 seconds then highlight and start
+        setTimeout(() => {
+          document.getElementById('menu-item-' + chapterNumber).style.color = '#00FF00';
+          setTimeout(() => {
+            startExperience();
+          }, 1000);
+        }, 2000);
+      }), 1400);
+    }
+
+    // Start experience (after menu selection)
+    function startExperience() {
+      document.getElementById('menu-screen').style.display = 'none';
+      currentSceneIndex = 0;
+      playScene(currentSceneIndex);
+    }
+
+    // Play scene by index
+    function playScene(index) {
+      const sceneName = scenes[index];
+      console.log('Playing scene:', sceneName);
+
+      if (sceneName === 'sc1') {
+        playScene1();
+      } else if (sceneName === 'sc2') {
+        playScene2();
+      } else if (sceneName === 'sc3') {
+        playScene3();
+      }
+    }
+
+    // Scene 1 - Layered Sliding Animation (iframe)
+    function playScene1() {
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+
+      // Create iframe for sc1
+      const iframe = document.createElement('iframe');
+      iframe.src = 'sc1/sc1-intro.html';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.display = 'block';
+      container.appendChild(iframe);
+
+      console.log('SC1: Layered sliding animation scene started (10 seconds)');
+    }
+
+    // Scene 2 - Character Walking (iframe)
+    function playScene2() {
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+
+      // Create iframe for sc2
+      const iframe = document.createElement('iframe');
+      iframe.src = 'sc2/sc2-intro.html';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.display = 'block';
+      container.appendChild(iframe);
+
+      console.log('SC2: Character walking scene started (8 seconds)');
+    }
+
+    // Scene 3 - Zoom Effect and Text Overlay (iframe)
+    function playScene3() {
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+
+      // Create iframe for sc3
+      const iframe = document.createElement('iframe');
+      iframe.src = 'sc3/sc3-intro.html';
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.display = 'block';
+      container.appendChild(iframe);
+
+      console.log('SC3: Zoom effect and text overlay scene started (10 seconds)');
+    }
+
+    // Advance to next scene
+    function nextScene() {
+      cleanupScene(); // Clean up current scene first
+      currentSceneIndex = currentSceneIndex + 1;
+
+      // If we've reached the end, loop back to menu instead of sc1
+      if (currentSceneIndex >= scenes.length) {
+        currentSceneIndex = 0;
+        showMenu();
+      } else {
+        playScene(currentSceneIndex);
+      }
+    }
+
+    // Start screen is shown on load (no auto-start)
+    window.addEventListener('load', () => {
+      console.log('Page loaded. Click ابدأ to start.');
+    });
+
+    // Global message listener for scene completion events
+    window.addEventListener('message', (event) => {
+      if (event.data === 'sc1-complete') {
+        console.log('SC1 complete, moving to next scene...');
+        nextScene();
+      } else if (event.data === 'sc2-complete') {
+        console.log('SC2 complete, moving to next scene...');
+        nextScene();
+      } else if (event.data === 'sc3-complete') {
+        console.log('SC3 complete, moving to next scene...');
+        nextScene();
+      }
+    });
+
+    // Keyboard controls (optional)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'n' || e.key === 'N') {
+        nextScene();
+      }
+    });
+  </script>
+</body>
+</html>

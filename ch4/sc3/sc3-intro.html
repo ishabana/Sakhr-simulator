@@ -4,15 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SC3 - Complex Sliding Scene</title>
-
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="../../../design-system/fonts.css">
-  <link rel="stylesheet" href="../../../design-system/tokens.css">
-
+  <link rel="stylesheet" href="../../fonts.css">
   <!-- Animation System CSS -->
   <link rel="stylesheet" href="../../styles/animation-base.css">
   <link rel="stylesheet" href="../../styles/text-boxes.css">
-
   <style>
     /* Override to use proper centering from animation-base.css */
     body {
@@ -24,7 +20,6 @@
       margin: 0;
       overflow: hidden;
     }
-
     .screen-container {
       position: relative;
       width: 1280px;
@@ -32,7 +27,6 @@
       background: #000000;
       overflow: hidden;
     }
-
     #scene-container {
       position: absolute;
       top: 0;
@@ -51,26 +45,18 @@
       جاري التحميل...
     </div>
   </div>
-
   <!-- Animation Engine Scripts -->
   <script src="../../engine/typewriter.js"></script>
   <script src="../../engine/sprite-animator.js"></script>
   <script src="../../engine/audio-player.js"></script>
   <script src="../../engine/engine.js"></script>
-
   <script>
-    // Scene 3 configuration - Characters center, backgrounds as full-width panoramas
+    // Scene 3 configuration
     const SC3_CONFIG = {
-      "duration": 14000,
+      "duration": 13000,
       "backgroundColor": "#000000",
       "autoAdvance": false
     };
-
-    // Frame-by-frame positions for sliding animations
-    const tankPositionsRTL = [1300, 1100, 900, 700, 500, 300, 100, -100];
-    const tankPositionsLTR = [-100, 100, 300, 500, 700, 900, 1100, 1300];
-    const bgPositions = [-400, 0, 400, 800, 1200, 1600, 2000, 2400];
-
     // Add callback to notify parent when scene ends
     SC3_CONFIG.onEnd = () => {
       console.log('SC3 ended');
@@ -78,142 +64,164 @@
         window.parent.postMessage('sc3-complete', '*');
       }, 1000);
     };
-
     // Animation helper - moves sprite frame by frame
-    function animateFrameByFrame(element, positions, frameDelay, onComplete) {
+    function animateFrameByFrame(element, xPositions, frameDelay, onComplete) {
       let index = 0;
-      element.style.left = positions[0] + 'px';
-
+      element.style.left = xPositions[0] + 'px';
       const interval = setInterval(() => {
         index++;
-        if (index >= positions.length) {
+        if (index >= xPositions.length) {
           clearInterval(interval);
           if (onComplete) onComplete();
           return;
         }
-        element.style.left = positions[index] + 'px';
+        element.style.left = xPositions[index] + 'px';
       }, frameDelay);
-
       return interval;
     }
-
     // Play scene
     window.addEventListener('load', () => {
-      if (window.audioPlayer) {
-        try {
-          window.audioPlayer.stopMusic();
-          window.audioPlayer.playMusic('../../audio/music/ch4-theme.mp3', {
-            volume: 0.7,
-            loop: false
-          });
-          console.log('SC3: Intro sound started');
-        } catch (e) {
-          console.log('Sound file not found (optional):', e);
-        }
-      }
-
       // Create and setup scene
       const container = document.getElementById('scene-container');
       container.innerHTML = '';
       container.classList.remove('loading');
       container.style.background = '#000000';
-
-      // Show characters at time 0 - CENTER-LEFT position, close together
+      // Time 0: Show characters - EXACT sc2 positions (BOTH on LEFT side)
       const char1 = document.createElement('img');
       char1.src = 'b1.png';
+      char1.id = 'char1';
       char1.className = 'sprite';
-      char1.style.left = '500px';
-      char1.style.bottom = '50px';
-      char1.style.width = '250px';
+      char1.style.left = '-50px';
+      char1.style.bottom = '100px';
+      char1.style.width = '350px';
       char1.style.zIndex = '20';
       container.appendChild(char1);
-
       const char2 = document.createElement('img');
       char2.src = 'b2.png';
       char2.id = 'char2';
       char2.className = 'sprite';
-      char2.style.left = '700px';
-      char2.style.bottom = '50px';
-      char2.style.width = '250px';
+      char2.style.left = '10px';
+      char2.style.bottom = '100px';
+      char2.style.width = '500px';
       char2.style.zIndex = '20';
       container.appendChild(char2);
-
-      // Time 1000: Tank slides right to left (behind characters)
+      // Time 1000: 1.png slides left to right until it fills the background
+      setTimeout(() => {
+        const bg1 = document.createElement('img');
+        bg1.src = '1.png';
+        bg1.id = 'bg1';
+        bg1.className = 'sprite';
+        bg1.style.top = '0';
+        bg1.style.width = '1280px';
+        bg1.style.zIndex = '1';
+        container.appendChild(bg1);
+        animateFrameByFrame(bg1, [-1280, -1120, -960, -800, -640, -480, -320, -160, 0], 200);
+      }, 1000);
+      // Time 2600: t.png slides right to left until 3/4 appears
       setTimeout(() => {
         const tank = document.createElement('img');
         tank.src = 't.png';
+        tank.id = 'tank';
         tank.className = 'sprite';
-        tank.style.bottom = '50px';
-        tank.style.width = '250px';
-        tank.style.zIndex = '18';
+        tank.style.bottom = '100px';
+        tank.style.width = '400px';
+        tank.style.zIndex = '15';
         container.appendChild(tank);
-
-        animateFrameByFrame(tank, tankPositionsRTL, 300, () => {
-          tank.remove();
-        });
-      }, 1000);
-
-      // Time 3500: b2.png turns into b2-2.png
+        animateFrameByFrame(tank, [1280, 1092, 1030,], 400);
+      }, 2600);
+      // Time 3800: b2 becomes b2-2
       setTimeout(() => {
         const c2 = document.getElementById('char2');
-        if (c2) {
-          c2.src = 'b2-2.png';
+        if (c2) c2.src = 'b2-2.png';
+      }, 3800);
+      // Time 4200: b1 becomes b1-2, b2-2 becomes b2-3, everything starts sliding
+      setTimeout(() => {
+        const c1 = document.getElementById('char1');
+        const c2 = document.getElementById('char2');
+        if (c1) c1.src = 'b1-2.png';
+        if (c2) c2.src = 'b2-3.png';
+        // 1.png and t.png slide left to right (continue offscreen)
+        const bg1 = document.getElementById('bg1');
+        const tank = document.getElementById('tank');
+        if (bg1) {
+          bg1.style.left = '0px';
+          animateFrameByFrame(bg1, [0, 160, 320, 480, 640, 800, 960, 1120, 1280, 1440], 200);
         }
-      }, 3500);
-
-      // Time 4000: Tank slides back left to right AND background 1.png starts
-      setTimeout(() => {
-        // Tank reverse
-        const tankReverse = document.createElement('img');
-        tankReverse.src = 't.png';
-        tankReverse.className = 'sprite';
-        tankReverse.style.bottom = '50px';
-        tankReverse.style.width = '250px';
-        tankReverse.style.zIndex = '18';
-        container.appendChild(tankReverse);
-
-        animateFrameByFrame(tankReverse, tankPositionsLTR, 300, () => {
-          tankReverse.remove();
-        });
-
-        // Background 1.png starts (FULL-WIDTH PANORAMA at background layer)
-        const bg1 = document.createElement('img');
-        bg1.src = '1.png';
-        bg1.className = 'sprite';
-        bg1.style.top = '0';
-        bg1.style.width = '1400px';
-        bg1.style.zIndex = '3';
-        container.appendChild(bg1);
-
-        animateFrameByFrame(bg1, bgPositions, 300);
-      }, 4000);
-
-      // Time 6400: Background 2.png follows
-      setTimeout(() => {
+        if (tank) {
+          tank.style.left = '1030px';
+          animateFrameByFrame(tank, [2400, 1350, 1670, 1990, 2310, 2630], 300);
+        }
+        // 2.png starts sliding in (pushing effect)
         const bg2 = document.createElement('img');
         bg2.src = '2.png';
+        bg2.id = 'bg2';
         bg2.className = 'sprite';
         bg2.style.top = '0';
-        bg2.style.width = '1400px';
-        bg2.style.zIndex = '3';
+        bg2.style.width = '1280px';
+        bg2.style.zIndex = '2';
         container.appendChild(bg2);
-
-        animateFrameByFrame(bg2, bgPositions, 300);
-      }, 6400);
-
-      // Time 8800: Background 3.png follows
+        animateFrameByFrame(bg2, [-1280, -1120, -960, -800, -640, -480, -320, -160, 0, 160], 200);
+        // Characters slide to right third
+        if (c1) {
+          c1.style.left = '250px';
+          animateFrameByFrame(c1, [320, 450, 550, 660, 840, 920], 300);
+        }
+        if (c2) {
+          c2.style.left = '100px';
+          animateFrameByFrame(c2, [120, 250, 350, 460, 620, 700], 300);
+        }
+      }, 4200);
+      // Time 6200: 2 continues, 3 starts
       setTimeout(() => {
+        const bg2 = document.getElementById('bg2');
+        if (bg2) {
+          bg2.style.left = '160px';
+          animateFrameByFrame(bg2, [160, 320, 480, 640, 800, 960, 1120, 1280, 1440, 1600], 200);
+        }
         const bg3 = document.createElement('img');
         bg3.src = '3.png';
+        bg3.id = 'bg3';
         bg3.className = 'sprite';
         bg3.style.top = '0';
-        bg3.style.width = '1400px';
+        bg3.style.width = '1280px';
         bg3.style.zIndex = '3';
         container.appendChild(bg3);
-
-        animateFrameByFrame(bg3, bgPositions, 300);
-      }, 8800);
-
+        animateFrameByFrame(bg3, [-1280, -1120, -960, -800, -640, -480, -320, -160, 0, 160], 200);
+      }, 6200);
+      // Time 8200: 3 continues, 4 starts
+      setTimeout(() => {
+        const bg3 = document.getElementById('bg3');
+        if (bg3) {
+          bg3.style.left = '160px';
+          animateFrameByFrame(bg3, [160, 320, 480, 640, 800, 960, 1120, 1280, 1440, 1600], 200);
+        }
+        const bg4 = document.createElement('img');
+        bg4.src = '4.png';
+        bg4.id = 'bg4';
+        bg4.className = 'sprite';
+        bg4.style.top = '0';
+        bg4.style.width = '1280px';
+        bg4.style.zIndex = '4';
+        container.appendChild(bg4);
+        animateFrameByFrame(bg4, [-1280, -1120, -960, -800, -640, -480, -320, -160, 0, 160], 200);
+      }, 8200);
+      // Time 10200: 4 continues, 6 starts and becomes final background
+      setTimeout(() => {
+        const bg4 = document.getElementById('bg4');
+        if (bg4) {
+          bg4.style.left = '160px';
+          animateFrameByFrame(bg4, [160, 320, 480, 640, 800, 960, 1120, 1280, 1440, 1600], 200);
+        }
+        const bg6 = document.createElement('img');
+        bg6.src = '6.png';
+        bg6.id = 'bg6';
+        bg6.className = 'sprite';
+        bg6.style.top = '0';
+        bg6.style.width = '1280px';
+        bg6.style.zIndex = '5';
+        container.appendChild(bg6);
+        animateFrameByFrame(bg6, [-1280, -1120, -960, -800, -640, -480, -320, -160, 0], 200);
+      }, 10200);
       // Schedule scene end
       setTimeout(() => {
         if (SC3_CONFIG.onEnd) {

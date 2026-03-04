@@ -1,0 +1,4 @@
+1- scene starts with bg.png and front-1.png and front-2.png behind it as front-1.png is very big almost covering the whole canvas
+2- front-1.png starts to zoom out and get smaller frame by frame until it disappears and we see front-2
+3- front-2.png turns into front-3.png
+4- an arabic text above in says "عمل خارق!"

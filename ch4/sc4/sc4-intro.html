@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC4 - Team Introduction Scene</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 4 configuration - Continues from SC3 end positions, team slides in
+    const SC4_CONFIG = {
+      "duration": 10000,
+      "background": "bg.png",
+      "autoAdvance": false
+    };
+    // Frame-by-frame positions for team sliding left to right
+    const teamPositions = [-600, -400, -200, 0];
+    // Animation helper - moves sprite frame by frame
+    function animateFrameByFrame(element, positions, frameDelay, onComplete) {
+      let index = 0;
+      element.style.left = positions[0] + 'px';
+      const interval = setInterval(() => {
+        index++;
+        if (index >= positions.length) {
+          clearInterval(interval);
+          if (onComplete) onComplete();
+          return;
+        }
+        element.style.left = positions[index] + 'px';
+      }, frameDelay);
+      return interval;
+    }
+    // Add callback to notify parent when scene ends
+    SC4_CONFIG.onEnd = () => {
+      console.log('SC4 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc4-complete', '*');
+      }, 1000);
+    };
+    // Play scene
+    window.addEventListener('load', () => {
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      // Create background
+      const bg = document.createElement('img');
+      bg.src = SC4_CONFIG.background;
+      bg.className = 'scene-bg';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+      // Show char1 (b1-2.png) at SC3 final position: x=920, bottom-100px, width=350px
+      const char1 = document.createElement('img');
+      char1.src = 'b1-2.png';
+      char1.className = 'sprite';
+      char1.style.left = '920px';
+      char1.style.bottom = '100px';
+      char1.style.width = '350px';
+      char1.style.zIndex = '20';
+      container.appendChild(char1);
+      // Show char2 (b2-3.png) at SC3 final position: x=700, bottom-100px, width=500px
+      const char2 = document.createElement('img');
+      char2.src = 'b2-3.png';
+      char2.className = 'sprite';
+      char2.style.left = '700px';
+      char2.style.bottom = '100px';
+      char2.style.width = '500px';
+      char2.style.zIndex = '20';
+      container.appendChild(char2);
+      // Time 1500: team.png slides in from left
+      setTimeout(() => {
+        const team = document.createElement('img');
+        team.src = 'team.png';
+        team.className = 'sprite';
+        team.style.bottom = '100px';
+        team.style.width = '850px';
+        team.style.zIndex = '15';
+        container.appendChild(team);
+        // Animate team sliding left to right
+        animateFrameByFrame(team, teamPositions, 350);
+      }, 1500);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC4_CONFIG.onEnd) {
+          SC4_CONFIG.onEnd();
+        }
+      }, SC4_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

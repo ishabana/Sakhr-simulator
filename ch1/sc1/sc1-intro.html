@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC1 - Intro Scene</title>
+
+  <!-- Embedded Fonts CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+    }
+
+    :root {
+      --arabic-text: "في عام ١٩٨٢، دخل رجل إلى مكتب شركة صخر للبرمجيات في الكويت حاملاً حلماً بتعريب الحاسوب";
+      --english-text: "NO! that's all";
+    }
+
+    /* Force MSX International for ASCII/Latin characters */
+    .text-overlay {
+      font-family: 'MSX International', 'FF Sakhr', monospace !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Scene Container -->
+  <div id="scene-container" class="loading">
+    جاري التحميل...
+  </div>
+
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+
+  <script>
+    // Scene 1 configuration
+    const SC1_CONFIG = {
+      "duration": 15000,
+      "background": "bg.png",
+      "autoAdvance": false,
+      "timeline": [
+        {
+          "time": 0,
+          "action": "showSprite",
+          "config": {
+            "id": "staticChars",
+            "image": "still.png",
+            "position": {
+              "x": "right-100px",
+              "y": "bottom-40px"
+            },
+            "width": "560px",
+            "zIndex": 5
+          }
+        },
+        {
+          "time": 1000,
+          "action": "animateSprite",
+          "config": {
+            "id": "walkingChar",
+            "frames": [
+              "1.png",
+              "2.png",
+              "2-1.png",
+              "3.png",
+              "4.png",
+              "5.png",
+              "6.png",
+              "7.png"
+            ],
+            "positions": [
+              {"x": 25, "y": "bottom-75px"},
+              {"x": 50, "y": "bottom-75px"},
+              {"x": 75, "y": "bottom-75px"},
+              {"x": 94, "y": "bottom-75px"},
+              {"x": 112, "y": "bottom-75px"},
+              {"x": 125, "y": "bottom-75px"},
+              {"x": 135, "y": "bottom-75px"},
+              {"x": 140, "y": "bottom-75px"}
+            ],
+            "frameDelay": 400,
+            "width": "470px",
+            "zIndex": 10
+          }
+        },
+        {
+          "time": 4500,
+          "action": "showText",
+          "config": {
+            "id": "question",
+            "text": "ممكن كمبيوتر عربي؟",
+            "type": "overlay",
+            "position": {
+              "x": "center",
+              "y": "10%"
+            },
+            "style": {
+              "color": "#000000",
+              "fontSize": "24px",
+              "lineHeight": "1.5",
+              "textAlign": "center",
+              "maxWidth": "90%",
+              "fontFamily": "'FF Sakhr', monospace",
+              "textShadow": "none"
+            },
+            "animation": {
+              "type": "typewriter",
+              "speed": 80,
+              "showCursor": true
+            }
+          }
+        },
+        {
+          "time": 7500,
+          "action": "showText",
+          "config": {
+            "id": "answer",
+            "text": "NO!",
+            "type": "overlay",
+            "position": {
+              "x": "center",
+              "y": "20%"
+            },
+            "style": {
+              "color": "#000000",
+              "fontSize": "24px",
+              "lineHeight": "1.5",
+              "textAlign": "center",
+              "maxWidth": "90%",
+              "fontFamily": "'MSX International', monospace",
+              "textShadow": "none"
+            },
+            "animation": {
+              "type": "typewriter",
+              "speed": 80,
+              "showCursor": true
+            }
+          }
+        }
+      ]
+    };
+
+    // Add callback to notify parent when scene ends
+    SC1_CONFIG.onEnd = () => {
+      console.log('SC1 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc1-complete', '*');
+      }, 1000);
+    };
+
+    // Play intro sound
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('../../audio/music/ch1-theme.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC1: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+
+      // Create and play scene
+      const container = document.getElementById('scene-container');
+      const scenePlayer = new ScenePlayer(SC1_CONFIG, container);
+      scenePlayer.play();
+    });
+  </script>
+</body>
+</html>

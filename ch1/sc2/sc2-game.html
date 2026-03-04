@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - الفصل ١ / المشهد ٢ - Space Invaders</title>
+  <link rel="stylesheet" href="../../fonts.css">
+  <style>
+    body {
+      background: #000000;
+      margin: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    #game-container {
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      position: relative;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .player {
+      position: absolute;
+      bottom: 50px;
+      width: 300px;
+      height: auto;
+      z-index: 10;
+      image-rendering: pixelated;
+    }
+    /* Invaders - using sprite sheet */
+    .invader {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      background-image: url('invaders.png');
+      background-size: 156px auto; /* 3 frames × 52px */
+      z-index: 5;
+      image-rendering: pixelated;
+      overflow: hidden;
+    }
+    .bullet {
+      position: absolute;
+      font-family: 'FF Sakhr', monospace;
+      font-size: 48px;
+      color: #FFFFFF;
+      z-index: 8;
+    }
+    .explosion {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      background-image: url('crash.png');
+      background-size: 52px auto;
+      z-index: 15;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  <script>
+    const container = document.getElementById('game-container');
+    const GAME_WIDTH = 1280;
+    const GAME_HEIGHT = 800;
+    const GAME_DURATION = 42000;
+    let player = null;
+    let playerX = GAME_WIDTH / 2 - 150;
+    let playerDirection = 1;
+    let invaders = [];
+    let bullets = [];
+    let score = 0;
+    const BULLET_VARIANTS = ['ع', 'عـ', 'ـعـ', 'ـع'];
+    let currentBulletVariant = 0;
+    // Sprite mapping: 4 types × 4 colors, 3 frames each
+    // Each invader type is on its own row (4 rows per color)
+    // Frames: 0, 1, 2 (left to right in sprite sheet)
+    const INVADER_TYPES = [
+      // Cyan invaders (rows 0-3)
+      { row: 0, color: 'cyan' },    // Type 1
+      { row: 1, color: 'cyan' },    // Type 2
+      { row: 2, color: 'cyan' },    // Type 3
+      { row: 3, color: 'cyan' },    // Type 4
+      // Magenta invaders (rows 4-7)
+      { row: 4, color: 'magenta' }, // Type 1
+      { row: 5, color: 'magenta' }, // Type 2
+      { row: 6, color: 'magenta' }, // Type 3
+      { row: 7, color: 'magenta' }, // Type 4
+      // Yellow invaders (rows 8-11)
+      { row: 8, color: 'yellow' },  // Type 1
+      { row: 9, color: 'yellow' },  // Type 2
+      { row: 10, color: 'yellow' }, // Type 3
+      { row: 11, color: 'yellow' }, // Type 4
+      // Red invaders (rows 12-15)
+      { row: 12, color: 'red' },    // Type 1
+      { row: 13, color: 'red' },    // Type 2
+      { row: 14, color: 'red' },    // Type 3
+      { row: 15, color: 'red' }     // Type 4
+    ];
+    const hitSound = new Audio();
+    let soundLoaded = false;
+    try {
+      hitSound.src = 'crash.mp3';
+      hitSound.volume = 0.5;
+      hitSound.addEventListener('canplaythrough', () => {
+        soundLoaded = true;
+      });
+    } catch(e) {
+      console.log('Crash sound not found');
+    }
+    function init() {
+      // Create player
+      player = document.createElement('img');
+      player.src = '1.png';
+      player.className = 'player';
+      player.style.left = playerX + 'px';
+      container.appendChild(player);
+      // Create invaders (4 rows on screen, 8 per row)
+      // Each row: DIFFERENT invader type + DIFFERENT color
+      const invaderTypesForGame = [
+        INVADER_TYPES[0],   // Row 1: Cyan type 1
+        INVADER_TYPES[5],   // Row 2: Magenta type 2
+        INVADER_TYPES[10],  // Row 3: Yellow type 3
+        INVADER_TYPES[15]   // Row 4: Red type 4
+      ];
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 8; col++) {
+          const invader = document.createElement('div');
+          invader.className = 'invader';
+          const invaderType = invaderTypesForGame[row];
+          // Set initial sprite position (frame 0)
+          const bgY = -(invaderType.row * 52); // 52px per sprite height
+          invader.style.backgroundPosition = `0px ${bgY}px`;
+          const x = 180 + col * 120;
+          const targetY = 50 + row * 80;
+          const startY = -100; // Start above screen
+          invader.style.left = x + 'px';
+          invader.style.top = startY + 'px';
+          container.appendChild(invader);
+          invaders.push({
+            element: invader,
+            x: x,
+            y: startY,
+            targetY: targetY,
+            alive: true,
+            typeRow: invaderType.row,
+            frame: 0,
+            row: row,
+            col: col
+          });
+        }
+      }
+      // Animate all invaders sliding down frame by frame
+      let currentY = -100;
+      let gameStarted = false;
+      const slideInterval = setInterval(() => {
+        currentY += 2; // Move down 2px per frame (much slower)
+        invaders.forEach(invader => {
+          invader.y = currentY + (invader.targetY - 50);
+          invader.element.style.top = invader.y + 'px';
+        });
+        // Start shooting earlier - when invaders are partially visible
+        if (!gameStarted && currentY >= -50) {
+          gameStarted = true;
+          startGame();
+        }
+        // When invaders reach their final positions, stop sliding
+        if (currentY >= 50) {
+          clearInterval(slideInterval);
+          // Set final positions
+          invaders.forEach(invader => {
+            invader.y = invader.targetY;
+            invader.element.style.top = invader.y + 'px';
+          });
+        }
+      }, 150); // 150ms per frame (much slower)
+    }
+    function startGame() {
+      let startTime = Date.now();
+      let lastShot = 0;
+      let lastPlayerMove = 0;
+      let lastInvaderAnim = 0;
+      function gameLoop() {
+        const elapsed = Date.now() - startTime;
+        if (elapsed >= GAME_DURATION) {
+          endGame();
+          return;
+        }
+        const now = Date.now();
+        // Move player (frame-by-frame with randomness)
+        if (now - lastPlayerMove > 400) {
+          // Random movement distance (20-60px)
+          const moveDistance = Math.floor(Math.random() * 41) + 20;
+          playerX += playerDirection * moveDistance;
+          // Change direction at boundaries
+          if (playerX <= 0 || playerX >= GAME_WIDTH - 300) {
+            playerDirection *= -1;
+            playerX = Math.max(0, Math.min(playerX, GAME_WIDTH - 300));
+          }
+          // Randomly change direction (20% chance)
+          if (Math.random() < 0.2) {
+            playerDirection *= -1;
+          }
+          player.style.left = playerX + 'px';
+          lastPlayerMove = now;
+        }
+        // Animate invaders (cycle through 3 frames)
+        if (now - lastInvaderAnim > 600) {
+          animateInvaders();
+          lastInvaderAnim = now;
+        }
+        // Shoot every 1200ms
+        if (elapsed - lastShot > 1200) {
+          shoot();
+          lastShot = elapsed;
+        }
+        updateBullets();
+        requestAnimationFrame(gameLoop);
+      }
+      gameLoop();
+    }
+    function animateInvaders() {
+      invaders.forEach(invader => {
+        if (!invader.alive) return;
+        // Cycle through 3 frames: 0 → 1 → 2 → 0 → ...
+        invader.frame = (invader.frame + 1) % 3;
+        const bgX = -(invader.frame * 52); // 52px per frame
+        const bgY = -(invader.typeRow * 52);
+        invader.element.style.backgroundPosition = `${bgX}px ${bgY}px`;
+      });
+    }
+    function shoot() {
+      player.src = '2.png';
+      // Random X offset to hit different columns (-100 to +100)
+      const randomOffsetX = Math.floor(Math.random() * 200) - 100;
+      const bulletX = playerX + 130 + randomOffsetX;
+      const bullet = document.createElement('div');
+      bullet.className = 'bullet';
+      bullet.textContent = BULLET_VARIANTS[currentBulletVariant];
+      bullet.style.left = bulletX + 'px';
+      bullet.style.bottom = '250px';
+      container.appendChild(bullet);
+      bullets.push({
+        element: bullet,
+        x: bulletX,
+        y: GAME_HEIGHT - 250,
+        variant: BULLET_VARIANTS[currentBulletVariant]
+      });
+      currentBulletVariant = (currentBulletVariant + 1) % BULLET_VARIANTS.length;
+      setTimeout(() => {
+        player.src = '1.png';
+      }, 300);
+    }
+    function updateBullets() {
+      bullets.forEach((bullet, index) => {
+        bullet.y -= 2;
+        bullet.element.style.bottom = (GAME_HEIGHT - bullet.y) + 'px';
+        checkCollision(bullet, index);
+        if (bullet.y < 0) {
+          bullet.element.remove();
+          bullets.splice(index, 1);
+        }
+      });
+    }
+    function checkCollision(bullet, bulletIndex) {
+      invaders.forEach((invader, invaderIndex) => {
+        if (!invader.alive) return;
+        const bulletRect = {
+          x: bullet.x,
+          y: bullet.y,
+          width: 40,
+          height: 40
+        };
+        const invaderRect = {
+          x: invader.x,
+          y: invader.y,
+          width: 52,
+          height: 52
+        };
+        if (isColliding(bulletRect, invaderRect)) {
+          hitInvader(invader, invaderIndex, bullet);
+          bullet.element.remove();
+          bullets.splice(bulletIndex, 1);
+        }
+      });
+    }
+    function isColliding(rect1, rect2) {
+      return rect1.x < rect2.x + rect2.width &&
+             rect1.x + rect1.width > rect2.x &&
+             rect1.y < rect2.y + rect2.height &&
+             rect1.y + rect1.height > rect2.y;
+    }
+    function hitInvader(invader, index, bullet) {
+      invader.alive = false;
+      score++;
+      if (soundLoaded) {
+        hitSound.currentTime = 0;
+        hitSound.play().catch(e => {});
+      }
+      // Show explosion sprite matching invader color
+      // Map invader typeRow to crash sprite row
+      const crashRowMap = {
+        0: 0,    // Cyan invader → Cyan crash (row 0)
+        5: 4,    // Magenta invader → Magenta crash (row 4)
+        10: 8,   // Yellow invader → Yellow crash (row 8)
+        15: 12   // Red invader → Red crash (row 12)
+      };
+      const crashRow = crashRowMap[invader.typeRow] || 0;
+      const bgY = -(crashRow * 52);
+      const explosion = document.createElement('div');
+      explosion.className = 'explosion';
+      explosion.style.left = invader.x + 'px';
+      explosion.style.top = invader.y + 'px';
+      explosion.style.backgroundPosition = `0px ${bgY}px`;
+      container.appendChild(explosion);
+      invader.element.remove();
+      setTimeout(() => explosion.remove(), 200);
+    }
+    function endGame() {
+      console.log('SC2 Complete! Score:', score);
+      bullets.forEach(b => b.element.remove());
+      bullets = [];
+    }
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC7 - Wipe and Pixel Appear Scene</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    /* Wipe from middle effect */
+    @keyframes wipeFromMiddle {
+      0% {
+        clip-path: polygon(0 50%, 100% 50%, 100% 50%, 0 50%);
+      }
+      100% {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+    }
+    .scene-bg.wipe-effect {
+      animation: wipeFromMiddle 2s ease-out forwards;
+    }
+    /* Pixel appear effect - no blur */
+    @keyframes pixelAppear {
+      0% {
+        opacity: 0;
+        filter: contrast(200%);
+      }
+      50% {
+        opacity: 0.7;
+        filter: contrast(150%);
+      }
+      100% {
+        opacity: 1;
+        filter: contrast(100%);
+      }
+    }
+    .pixel-appear {
+      animation: pixelAppear 1.5s ease-out forwards;
+    }
+    /* Centered sprite - fixed size, 20% smaller */
+    .centered-sprite {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      width: 1000px;
+      height: 1000px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 7 configuration
+    const SC7_CONFIG = {
+      "duration": 12000,
+      "background": "bg.png",
+      "backgroundEffect": {
+        "type": "wipeFromMiddle",
+        "duration": 2000
+      },
+      "autoAdvance": false,
+      "timeline": [
+        {
+          "time": 2500,
+          "action": "showSprite",
+          "config": {
+            "id": "characterLoop",
+            "frames": ["2.png"],
+            "loop": true,
+            "frameDelay": 500,
+            "position": {"x": "center", "y": "center"},
+            "entryEffect": "pixelAppear",
+            "entryDuration": 1500,
+            "zIndex": 10
+          }
+        }
+      ]
+    };
+    // Add callback to notify parent when scene ends
+    SC7_CONFIG.onEnd = () => {
+      console.log('SC7 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc7-complete', '*');
+      }, 1000);
+    };
+    // Start scene when page loads
+    window.addEventListener('load', () => {
+      // Play audio
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('farhdi.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC7: Audio started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+      // Create and play scene with custom effects
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      // Create background with wipe effect
+      const bg = document.createElement('img');
+      bg.src = SC7_CONFIG.background;
+      bg.className = 'scene-bg wipe-effect';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+      // Schedule sprite appearance
+      setTimeout(() => {
+        const sprite = document.createElement('img');
+        sprite.className = 'centered-sprite';
+        sprite.id = 'characterSprite';
+        sprite.src = '2.png';
+        sprite.alt = 'Character Sprite';
+        container.appendChild(sprite);
+      }, SC7_CONFIG.timeline[0].time);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC7_CONFIG.onEnd) {
+          SC7_CONFIG.onEnd();
+        }
+      }, SC7_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

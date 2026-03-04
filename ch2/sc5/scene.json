@@ -1,0 +1,24 @@
+{
+  "duration": 8000,
+  "backgroundColor": "#2424B6",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 1500,
+      "action": "showSprite",
+      "config": {
+        "id": "front1",
+        "image": "front-1.png",
+        "position": {
+          "x": "center",
+          "y": "center"
+        },
+        "width": "800px",
+        "zIndex": 10,
+        "entryEffect": "wipeFromTop"
+      }
+    }
+  ]
+}

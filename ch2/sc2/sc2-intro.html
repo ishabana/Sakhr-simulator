@@ -4,15 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SC2 - Map Reveal and Scrolling Flags</title>
-
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="../../../design-system/fonts.css">
-  <link rel="stylesheet" href="../../../design-system/tokens.css">
-
+  <link rel="stylesheet" href="../../fonts.css">
   <!-- Animation System CSS -->
   <link rel="stylesheet" href="../../styles/animation-base.css">
   <link rel="stylesheet" href="../../styles/text-boxes.css">
-
   <style>
     /* Override to use proper centering from animation-base.css */
     body {
@@ -24,7 +20,6 @@
       margin: 0;
       overflow: hidden;
     }
-
     .screen-container {
       position: relative;
       width: 1280px;
@@ -32,7 +27,6 @@
       background: #808080;
       overflow: hidden;
     }
-
     #scene-container {
       position: absolute;
       top: 0;
@@ -41,21 +35,29 @@
       height: 100%;
       background: #808080;
     }
-
-    .flags-row {
+    .flags-container {
       position: absolute;
       top: 100px;
       left: 0;
-      display: flex;
-      gap: 30px;
+      width: 100%;
+      height: 80px;
+      overflow: hidden;
       z-index: 8;
     }
-
+    .flags-row {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      gap: 40px;
+      white-space: nowrap;
+    }
     .flag {
-      width: 60px;
-      height: 45px;
+      width: 80px;
+      height: 60px;
       object-fit: contain;
       image-rendering: pixelated;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -67,13 +69,11 @@
       جاري التحميل...
     </div>
   </div>
-
   <!-- Animation Engine Scripts -->
   <script src="../../engine/typewriter.js"></script>
   <script src="../../engine/sprite-animator.js"></script>
   <script src="../../engine/audio-player.js"></script>
   <script src="../../engine/engine.js"></script>
-
   <script>
     // Scene 2 configuration
     const SC2_CONFIG = {
@@ -81,13 +81,11 @@
       "backgroundColor": "#808080",
       "autoAdvance": false
     };
-
     // Flags list
     const flags = ['egypt.png', 'iraq.png', 'jordan.png', 'kuwait.png', 'lybia.png', 'palestine.png', 'saudi.png'];
     let flagsRow = null;
     let flagsInterval = null;
     let currentFlagX = 0;
-
     // Add callback to notify parent when scene ends
     SC2_CONFIG.onEnd = () => {
       console.log('SC2 ended');
@@ -96,65 +94,48 @@
         window.parent.postMessage('sc2-complete', '*');
       }, 1000);
     };
-
-    // Frame-by-frame map reveal from bottom up
-    function revealMapFrameByFrame(mapElement) {
-      const totalHeight = 400;
-      let currentHeight = 0;
-      const stepSize = 30;
-      const frameDelay = 100;
-      
-      mapElement.style.clipPath = 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)';
-      
+    // Frame-by-frame map slide up from bottom to middle
+    function slideMapUpFrameByFrame(mapElement) {
+      const startY = 800; // Start below screen
+      const endY = -50; // End in the middle of screen
+      let currentY = startY;
+      const stepSize = 80;
+      const frameDelay = 220;
+      mapElement.style.top = startY + 'px';
       const interval = setInterval(() => {
-        currentHeight += stepSize;
-        const topPercent = 100 - (currentHeight / totalHeight * 100);
-        if (topPercent <= 0) {
-          mapElement.style.clipPath = 'none';
+        currentY -= stepSize;
+        if (currentY <= endY) {
+          currentY = endY;
+          mapElement.style.top = currentY + 'px';
           clearInterval(interval);
           return;
         }
-        mapElement.style.clipPath = `polygon(0 ${topPercent}%, 100% ${topPercent}%, 100% 100%, 0 100%)`;
+        mapElement.style.top = currentY + 'px';
       }, frameDelay);
     }
-
-    // Frame-by-frame scrolling flags from left to right
-    function scrollFlagsFrameByFrame() {
-      const stepSize = 40;
-      const frameDelay = 200;
-      
+    // Frame-by-frame continuous marquee scrolling flags (right to left)
+    function scrollFlagsMarquee() {
+      const stepSize = 20;
+      const frameDelay = 220;
+      const rowWidth = flagsRow.scrollWidth / 2; // Width of one set of flags
       flagsInterval = setInterval(() => {
-        currentFlagX += stepSize;
-        if (currentFlagX > 1400) {
-          currentFlagX = -800; // Reset to loop
+        currentFlagX -= stepSize;
+        // When first set is fully scrolled out, reset seamlessly
+        if (Math.abs(currentFlagX) >= rowWidth) {
+          currentFlagX = 0;
         }
         if (flagsRow) {
           flagsRow.style.left = currentFlagX + 'px';
         }
       }, frameDelay);
     }
-
     // Play scene
     window.addEventListener('load', () => {
-      if (window.audioPlayer) {
-        try {
-          window.audioPlayer.stopMusic();
-          window.audioPlayer.playMusic('../../audio/music/ch2-theme.mp3', {
-            volume: 0.7,
-            loop: false
-          });
-          console.log('SC2: Intro sound started');
-        } catch (e) {
-          console.log('Sound file not found (optional):', e);
-        }
-      }
-
       // Create and setup scene
       const container = document.getElementById('scene-container');
       container.innerHTML = '';
       container.classList.remove('loading');
       container.style.background = SC2_CONFIG.backgroundColor;
-
       // Time 0: Show front.png
       const front = document.createElement('img');
       front.src = 'front.png';
@@ -165,40 +146,38 @@
       front.style.bottom = '0';
       front.style.zIndex = '10';
       container.appendChild(front);
-
-      // Time 1500: Map reveals from bottom-up frame by frame
+      // Time 1500: Map slides up from bottom frame by frame
       setTimeout(() => {
         const map = document.createElement('img');
         map.src = 'map.png';
         map.className = 'sprite';
-        map.style.width = '500px';
+        map.style.width = '1200px';
+        map.style.height = 'auto';
         map.style.left = '50%';
         map.style.transform = 'translateX(-50%)';
-        map.style.top = '0';
         map.style.zIndex = '5';
         container.appendChild(map);
-        
-        revealMapFrameByFrame(map);
+        slideMapUpFrameByFrame(map);
       }, 1500);
-
-      // Time 4000: Flags start scrolling frame by frame left to right
+      // Time 4000: Flags start continuous marquee scrolling (right to left)
       setTimeout(() => {
+        const flagsContainer = document.createElement('div');
+        flagsContainer.className = 'flags-container';
         flagsRow = document.createElement('div');
         flagsRow.className = 'flags-row';
-        flagsRow.style.left = '-800px';
-        
-        // Add flags twice for seamless loop
-        [...flags, ...flags].forEach(flag => {
+        flagsRow.style.left = '0px';
+        currentFlagX = 0;
+        // Add flags 4 times for seamless continuous loop
+        [...flags, ...flags, ...flags, ...flags].forEach(flag => {
           const flagImg = document.createElement('img');
           flagImg.src = flag;
           flagImg.className = 'flag';
           flagsRow.appendChild(flagImg);
         });
-        
-        container.appendChild(flagsRow);
-        scrollFlagsFrameByFrame();
+        flagsContainer.appendChild(flagsRow);
+        container.appendChild(flagsContainer);
+        scrollFlagsMarquee();
       }, 4000);
-
       // Schedule scene end
       setTimeout(() => {
         if (SC2_CONFIG.onEnd) {

@@ -5,6 +5,11 @@
   "musicVolume": 0.7,
   "scenes": [
     "sc1/scene.json",
-    "sc6/scene.json"
+    "sc2/scene.json",
+    "sc3/scene.json",
+    "sc4/scene.json",
+    "sc5/scene.json",
+    "sc6/scene.json",
+    "sc7/scene.json"
   ]
 }

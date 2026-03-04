@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC1 - Raining Effect</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 1 configuration
+    const SC1_CONFIG = {
+      "duration": 12000,
+      "background": "bg-1.png",
+      "autoAdvance": false
+    };
+    // Rain frames
+    const rainFrames = ['c1.png', 'c2.png', 'c3.png', 'c4.png', 'c5.png', 'c6.png', 'c7.png', 'c8.png', 'c9.png'];
+    // Rain drops tracking
+    let rainDrops = [];
+    let rainInterval = null;
+    // Add callback to notify parent when scene ends
+    SC1_CONFIG.onEnd = () => {
+      console.log('SC1 ended');
+      // Cleanup
+      if (rainInterval) clearInterval(rainInterval);
+      setTimeout(() => {
+        window.parent.postMessage('sc1-complete', '*');
+      }, 1000);
+    };
+    // Frame-by-frame rain drop animation
+    function createRainDrop(container) {
+      const frame = rainFrames[Math.floor(Math.random() * rainFrames.length)];
+      const drop = document.createElement('img');
+      drop.src = frame;
+      drop.className = 'sprite';
+      drop.style.width = '80px';  // Good size for rain items
+      drop.style.zIndex = '5';
+      // Random x position across the canvas
+      const startX = Math.random() * 1200;
+      drop.style.left = startX + 'px';
+      drop.style.top = '-80px';
+      container.appendChild(drop);
+      rainDrops.push(drop);
+      // Frame-by-frame vertical movement (not smooth CSS animation)
+      let currentY = -80;
+      const targetY = 400; // Stop at middle of canvas
+      const stepSize = 50; // Move 50px per frame
+      const frameDelay = 150; // ms between frames
+      const moveInterval = setInterval(() => {
+        currentY += stepSize;
+        drop.style.top = currentY + 'px';
+        if (currentY >= targetY) {
+          clearInterval(moveInterval);
+          // Remove after reaching middle
+          setTimeout(() => {
+            drop.remove();
+            const index = rainDrops.indexOf(drop);
+            if (index > -1) rainDrops.splice(index, 1);
+          }, 200);
+        }
+      }, frameDelay);
+    }
+    // Play scene
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('ali-baba.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC1: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      // Create background
+      const bg = document.createElement('img');
+      bg.src = SC1_CONFIG.background;
+      bg.id = 'scene-background';
+      bg.className = 'scene-bg';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+      // Time 1000: Character appears from right
+      setTimeout(() => {
+        const character = document.createElement('img');
+        character.src = '1.png';
+        character.className = 'sprite';
+        character.style.width = '350px';  // Proper size
+        character.style.right = '0';
+        character.style.top = '60px';
+        character.style.zIndex = '5';
+        container.appendChild(character);
+        // Frame-by-frame entry from right to left
+        const positions = [1280, 1050];
+        let posIndex = 0;
+        character.style.right = 'auto';
+        character.style.left = positions[0] + 'px';
+        const entryInterval = setInterval(() => {
+          posIndex++;
+          if (posIndex >= positions.length) {
+            clearInterval(entryInterval);
+            return;
+          }
+          character.style.left = positions[posIndex] + 'px';
+        }, 200);
+      }, 1000);
+      // Time 2000: Start raining frame by frame
+      setTimeout(() => {
+        rainInterval = setInterval(() => {
+          createRainDrop(container);
+        }, 300); // New drop every 300ms
+      }, 2000);
+      // Time 8000: Stop raining and cleanup
+      setTimeout(() => {
+        if (rainInterval) {
+          clearInterval(rainInterval);
+          rainInterval = null;
+        }
+        // Remove remaining drops
+        rainDrops.forEach(drop => {
+          if (drop.parentNode) drop.remove();
+        });
+        rainDrops = [];
+      }, 8000);
+      // Time 8100: Change background to bg2.png
+      setTimeout(() => {
+        const bgElement = document.getElementById('scene-background');
+        if (bgElement) {
+          bgElement.src = 'bg2.png';
+        }
+      }, 8100);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC1_CONFIG.onEnd) {
+          SC1_CONFIG.onEnd();
+        }
+      }, SC1_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

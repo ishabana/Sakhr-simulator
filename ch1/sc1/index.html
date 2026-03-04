@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - الفصل ١ / المشهد ١</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <link rel="stylesheet" href="../../../../design-system/utilities.css">
+  <style>
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    /* Override screen container for 4:3 aspect ratio */
+    .screen-container {
+      width: 1024px;
+      height: 768px;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border: none !important;
+      box-shadow: none !important;
+      background: var(--bg-screen);
+    }
+    /* Text Section - Top (30% of screen) */
+    .text-section {
+      background: #000000;
+      height: 30%;
+      padding: var(--space-6) 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: none;
+      position: relative;
+    }
+    /* Use .arabic-text from fonts.css, only add layout properties */
+    #arabicText {
+      font-size: var(--font-size-xl);
+      line-height: var(--line-height-xl);
+      color: #FFFFFF;
+      text-align: center;
+      max-width: 90%;
+    }
+    .cursor {
+      display: inline-block;
+      width: 12px;
+      height: 24px;
+      background: #FFFFFF;
+      margin-right: 4px;
+      animation: cursorBlink 1060ms steps(1) infinite;
+      vertical-align: middle;
+    }
+    @keyframes cursorBlink {
+      0%, 50% { opacity: 1; }
+      50.1%, 100% { opacity: 0; }
+    }
+    /* Animation Section - Bottom (70% of screen) */
+    .animation-section {
+      position: relative;
+      height: 70%;
+      overflow: hidden;
+      background: #000000;
+    }
+    /* Scene Background */
+    .scene-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: var(--image-rendering);
+    }
+    /* Static Characters (right side) */
+    .static-chars {
+      position: absolute;
+      bottom: 30px;
+      right: 80px;
+      width: 450px;
+      height: auto;
+      z-index: 5;
+      image-rendering: var(--image-rendering);
+    }
+    /* Animated Character (walking sequence) */
+    .animated-char {
+      position: absolute;
+      bottom: 60px;
+      left: 20px;
+      width: 378px;
+      height: auto;
+      z-index: 10;
+      image-rendering: var(--image-rendering);
+    }
+    /* Control Buttons */
+    .controls {
+      position: absolute;
+      bottom: var(--space-4);
+      left: var(--space-4);
+      z-index: 100;
+      display: flex;
+      gap: var(--space-2);
+    }
+    /* Buttons use .arabic-text from fonts.css for font */
+    .btn {
+      background: transparent;
+      border: var(--border-width-medium) solid var(--text-primary);
+      color: var(--text-primary);
+      padding: var(--space-2) var(--space-4);
+      font-size: 14px;
+      cursor: pointer;
+      transition: none;
+    }
+    .btn:hover {
+      background: var(--text-primary);
+      color: var(--color-dark-blue);
+    }
+    .btn:active {
+      background: var(--color-cyan);
+      border-color: var(--color-cyan);
+      color: #000000;
+    }
+    /* Responsive scaling for smaller screens */
+    @media (max-width: 1024px) {
+      .screen-container {
+        width: 90vw;
+        height: calc(90vw * 3 / 4);
+      }
+    }
+    @media (max-height: 768px) {
+      .screen-container {
+        height: 90vh;
+        width: calc(90vh * 4 / 3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- MSX Screen Container (4:3 aspect ratio) -->
+  <div class="screen-container">
+    <!-- Text Section (Top - 30%) -->
+    <div class="text-section">
+      <div class="arabic-text" id="arabicText">
+        <span class="cursor"></span>
+      </div>
+    </div>
+    <!-- Animation Section (Bottom - 70%) -->
+    <div class="animation-section">
+      <!-- Control Buttons -->
+      <div class="controls">
+        <button class="btn arabic-text" onclick="startScene()">▶ ابدأ</button>
+        <button class="btn arabic-text" onclick="resetScene()">↻ إعادة</button>
+      </div>
+      <!-- Background -->
+      <img src="bg.png" alt="Background" class="scene-bg">
+      <!-- Static Characters (right side) -->
+      <img src="still.png" alt="Static Characters" class="static-chars">
+      <!-- Animated Character (walking sequence) -->
+      <img src="1.png" alt="Walking Character" class="animated-char" id="walkingChar">
+    </div>
+  </div>
+  <script>
+    // Arabic text for Chapter 1, Scene 1
+    const arabicText ="ممكن كمبيوتر عربي؟"
+    const englishText = "NO!"
+    let textIndex = 0;
+    let textAnimationStarted = false;
+    let characterAnimationStarted = false;
+    // Typewriter effect for Arabic text (80ms per character - MSX authentic timing)
+    function typeWriter() {
+      if (textIndex < arabicText.length) {
+        const textElement = document.getElementById('arabicText');
+        const currentText = arabicText.substring(0, textIndex + 1);
+        textElement.innerHTML = currentText + '<span class="cursor"></span>';
+        textIndex++;
+        setTimeout(typeWriter, 80);
+      } else {
+        // Text finished, wait 1 second then start character animation
+        if (!characterAnimationStarted) {
+          setTimeout(startCharacterAnimation, 1000);
+        }
+      }
+    }
+    // Animate character walking through frames 1-7
+    function startCharacterAnimation() {
+      characterAnimationStarted = true;
+      const char = document.getElementById('walkingChar');
+      // Frame sequence: 1, 2, 2-1, 3, 4, 5, 6, 7
+      const frames = ['1.png', '2.png', '2-1.png', '3.png', '4.png', '5.png', '6.png', '7.png'];
+      // Positions from door (starts at door, walks to center-left)
+      // First frame at door entrance (left edge), then walks right
+      // Adjusted for 378px character width to avoid overlap with static characters (at ~494px)
+      const positions = [20, 40, 60, 75, 90, 100, 108, 112];
+      let currentFrame = 0;
+      const frameDelay = 400; // 400ms per frame
+      const frameInterval = setInterval(() => {
+        if (currentFrame < frames.length) {
+          char.src = frames[currentFrame];
+          char.style.left = positions[currentFrame] + 'px';
+          currentFrame++;
+        } else {
+          clearInterval(frameInterval);
+        }
+      }, frameDelay);
+    }
+    // Start the scene sequence
+    function startScene() {
+      if (!textAnimationStarted) {
+        textAnimationStarted = true;
+        textIndex = 0;
+        typeWriter();
+      }
+    }
+    // Reset everything
+    function resetScene() {
+      textAnimationStarted = false;
+      characterAnimationStarted = false;
+      textIndex = 0;
+      const textElement = document.getElementById('arabicText');
+      textElement.innerHTML = '<span class="cursor"></span>';
+      const char = document.getElementById('walkingChar');
+      char.src = '1.png';
+      char.style.left = '20px';
+    }
+    // Auto-start on load
+    window.addEventListener('load', () => {
+      setTimeout(startScene, 500);
+    });
+  </script>
+</body>
+</html>

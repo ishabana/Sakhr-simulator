@@ -1,0 +1,67 @@
+:root {
+  /* MSX Colors */
+  --color-transparent: rgba(0, 0, 0, 0);
+  --color-black: #000000;
+  --color-medium-green: #00B600;
+  --color-light-green: #49DB49;
+  --color-dark-blue: #2424FF;
+  --color-light-blue: #4949FF;
+  --color-dark-red: #B60000;
+  --color-cyan: #00DBDB;
+  --color-medium-red: #FF4949;
+  --color-light-red: #FF6D6D;
+  --color-dark-yellow: #DBDB00;
+  --color-light-yellow: #DBDB49;
+  --color-dark-green: #009200;
+  --color-magenta: #DB49B6;
+  --color-gray: #B6B6B6;
+  --color-white: #FFFFFF;
+
+  /* Semantic Tokens */
+  --bg-primary: var(--color-dark-blue);
+  --bg-secondary: var(--color-black);
+  --text-primary: var(--color-white);
+  --text-secondary: var(--color-gray);
+  --border-primary: var(--color-cyan);
+  --border-secondary: var(--color-white);
+  --accent-primary: var(--color-dark-yellow);
+  --accent-secondary: var(--color-light-green);
+  --state-error: var(--color-dark-red);
+  --state-success: var(--color-dark-green);
+
+  /* Typography */
+  --font-english: 'MSX International', monospace;
+  --font-arabic: 'FF Sakhr', monospace;
+  --font-mono: var(--font-english);
+
+  /* Font Sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 48px;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-base: 22px;
+  --line-height-lg: 24px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Animation */
+  --duration-quick: 150ms;
+  --duration-normal: 300ms;
+  --ease-linear: linear;
+}

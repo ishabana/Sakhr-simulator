@@ -1,0 +1,3 @@
+1- the bg.png is opening with wibe effect from the moddle to top and bottom
+2- the frames 1 and 2.png are in loop and positioned in the model.
+3- the 1 and 2.png loop animation appears with an effect of each pixel appearing randomly, after the bg.png appears

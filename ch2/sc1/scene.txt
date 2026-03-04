@@ -1,0 +1,4 @@
+1- scene starts with the bg-1.png
+2- charcter 1.png appears in the right corner up of the canvas as if he enters from right to left
+3- from c1 till c9.png should appear frame by frame as if they are raining with random positions from up to the middle of the canvas
+4- all of the raining pngs they disappear and the bg1.png turns into bg2.png with no effects

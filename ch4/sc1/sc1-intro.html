@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC1 - Introduction Scene</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 1 configuration
+    const SC1_CONFIG = {
+      "duration": 10000,
+      "background": "bg.png",
+      "autoAdvance": false
+    };
+    // Front.png position configuration - adjust these values to control position
+    const FRONT_CONFIG = {
+      width: '900px',        // Width of front.png
+      left: '50%',           // Horizontal position (50% = center)
+      bottom: '100px',           // Distance from bottom
+      transform: 'translateX(-50%)'  // Center the element at its position
+    };
+    // Character animation configuration
+    const CHARACTER_CONFIG = {
+      width: '400px',        // Character width
+      bottom: '100px',       // Distance from bottom
+      startDelay: 2000,      // Delay before character appears (ms)
+      stepDelay: 400         // Delay between animation frames (ms)
+    };
+    // Add callback to notify parent when scene ends
+    SC1_CONFIG.onEnd = () => {
+      console.log('SC1 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc1-complete', '*');
+      }, 1000);
+    };
+    // Play intro sound
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('lamma-bada.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC1: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      // Create background
+      const bg = document.createElement('img');
+      bg.src = SC1_CONFIG.background;
+      bg.className = 'scene-bg';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+      // Show front.png with configurable position
+      const front = document.createElement('img');
+      front.src = 'front.png';
+      front.className = 'sprite';
+      front.style.width = FRONT_CONFIG.width;
+      front.style.left = FRONT_CONFIG.left;
+      front.style.bottom = FRONT_CONFIG.bottom;
+      front.style.transform = FRONT_CONFIG.transform;
+      front.style.zIndex = '10';
+      container.appendChild(front);
+      // Character walks in from left to right
+      setTimeout(() => {
+        const character = document.createElement('img');
+        character.src = '1.png';
+        character.className = 'sprite';
+        character.style.width = CHARACTER_CONFIG.width;
+        character.style.bottom = CHARACTER_CONFIG.bottom;
+        character.style.zIndex = '100';
+        container.appendChild(character);
+        // Frame-by-frame walking animation with position changes (left to right)
+        const positions = [1200, 1050, 1020, 1000, 980];
+        let posIndex = 0;
+        character.style.left = positions[0] + 'px';
+        const walkInterval = setInterval(() => {
+          posIndex++;
+          if (posIndex >= positions.length) {
+            clearInterval(walkInterval);
+            return;
+          }
+          character.style.left = positions[posIndex] + 'px';
+        }, CHARACTER_CONFIG.stepDelay);
+      }, CHARACTER_CONFIG.startDelay);
+      // Show text after character animation finishes
+      setTimeout(() => {
+        const text = document.createElement('div');
+        text.className = 'text-overlay';
+        text.style.position = 'absolute';
+        text.style.left = '50%';
+        text.style.top = '15%';
+        text.style.transform = 'translateX(-50%)';
+        text.style.color = '#000000';
+        text.style.fontSize = '36px';
+        text.style.fontWeight = 'bold';
+        text.style.lineHeight = '1.5';
+        text.style.textAlign = 'center';
+        text.style.maxWidth = '90%';
+        text.style.zIndex = '20';
+        text.style.textShadow = 'none';
+        container.appendChild(text);
+        // Typewriter effect
+        const fullText = 'غامر بفلوسك..اذا نجحت…!';
+        let charIndex = 0;
+        const typeInterval = setInterval(() => {
+          if (charIndex >= fullText.length) {
+            clearInterval(typeInterval);
+            return;
+          }
+          text.textContent += fullText[charIndex];
+          charIndex++;
+        }, 80);
+      }, 4500);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC1_CONFIG.onEnd) {
+          SC1_CONFIG.onEnd();
+        }
+      }, SC1_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>
+,

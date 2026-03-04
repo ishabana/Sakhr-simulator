@@ -4,15 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SC6 - Team Scene</title>
-
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="../../../design-system/fonts.css">
-  <link rel="stylesheet" href="../../../design-system/tokens.css">
-
+  <link rel="stylesheet" href="../../fonts.css">
   <!-- Animation System CSS -->
   <link rel="stylesheet" href="../../styles/animation-base.css">
   <link rel="stylesheet" href="../../styles/text-boxes.css">
-
   <style>
     /* Override to use proper centering from animation-base.css */
     body {
@@ -24,7 +20,6 @@
       margin: 0;
       overflow: hidden;
     }
-
     .screen-container {
       position: relative;
       width: 1280px;
@@ -32,7 +27,6 @@
       background: #000000;
       overflow: hidden;
     }
-
     #scene-container {
       position: absolute;
       top: 0;
@@ -50,22 +44,20 @@
       جاري التحميل...
     </div>
   </div>
-
   <!-- Animation Engine Scripts -->
   <script src="../../engine/typewriter.js"></script>
   <script src="../../engine/sprite-animator.js"></script>
   <script src="../../engine/audio-player.js"></script>
   <script src="../../engine/engine.js"></script>
-
   <script>
     // Scene 6 configuration
     const SC6_CONFIG = {
-      "duration": 15000,
+      "duration": 9000,
       "background": "team.png",
       "autoAdvance": false,
       "timeline": [
         {
-          "time": 8000,
+          "time": 1000,
           "action": "animateSprite",
           "config": {
             "id": "walkingChar",
@@ -76,19 +68,18 @@
               "4.png"
             ],
             "positions": [
-              {"x": 0, "y": "bottom-75px"},
-              {"x": 50, "y": "bottom-75px"},
-              {"x": 100, "y": "bottom-75px"},
-              {"x": 150, "y": "bottom-75px"}
+              {"x": 0, "y": "bottom-65px"},
+              {"x": 5, "y": "bottom-65px"},
+              {"x": 15, "y": "bottom-65px"},
+              {"x": 25, "y": "bottom-65px"}
             ],
             "frameDelay": 400,
-            "width": "450px",
+            "width": "380px",
             "zIndex": 10
           }
         }
       ]
     };
-
     // Add callback to notify parent when scene ends
     SC6_CONFIG.onEnd = () => {
       console.log('SC6 ended');
@@ -96,23 +87,8 @@
         window.parent.postMessage('sc6-complete', '*');
       }, 1000);
     };
-
-    // Play intro sound
+    // Start scene when page loads
     window.addEventListener('load', () => {
-      if (window.audioPlayer) {
-        try {
-          window.audioPlayer.stopMusic();
-          window.audioPlayer.playMusic('../../audio/music/ch1-theme.mp3', {
-            volume: 0.7,
-            loop: false
-          });
-          console.log('SC6: Intro sound started');
-        } catch (e) {
-          console.log('Sound file not found (optional):', e);
-        }
-      }
-
-      // Create and play scene
       const container = document.getElementById('scene-container');
       const scenePlayer = new ScenePlayer(SC6_CONFIG, container);
       scenePlayer.play();

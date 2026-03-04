@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC5 - Packaging Animation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #000000;
+      overflow: hidden;
+      width: 1280px;
+      height: 800px;
+    }
+    #wrapper {
+      width: 1280px;
+      height: 800px;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper"></div>
+
+  <script>
+    const wrapper = document.getElementById('wrapper');
+
+    // Create bottom cover (2-2.png) FIRST - must be under chipboard
+    const bottomCover = document.createElement('img');
+    bottomCover.src = '2-2.png';
+    bottomCover.style.cssText = `
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 800px;
+      width: 400px;
+      height: auto;
+      z-index: 3;
+      display: none;
+    `;
+    wrapper.appendChild(bottomCover);
+
+    // Create chipboard (1.png) - starts at right, slides to center
+    const chipboard = document.createElement('img');
+    chipboard.src = '1.png';
+    chipboard.style.cssText = `
+      position: absolute;
+      left: 980px;
+      top: 250px;
+      width: 300px;
+      height: auto;
+      z-index: 5;
+    `;
+    wrapper.appendChild(chipboard);
+
+    // Create top cover (2-1.png) - hidden initially
+    const topCover = document.createElement('img');
+    topCover.src = '2-1.png';
+    topCover.style.cssText = `
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: -400px;
+      width: 400px;
+      height: auto;
+      z-index: 10;
+      display: none;
+    `;
+    wrapper.appendChild(topCover);
+
+    console.log('SC5: Chipboard packaging animation started');
+
+    // Animation Step 1: Slide chipboard from right to center
+    let chipboardX = 980;
+    const targetX = 490; // Center position (1280-300)/2
+
+    const chipboardSlideInterval = setInterval(() => {
+      chipboardX -= 50; // Move left by 50px per frame
+      chipboard.style.left = chipboardX + 'px';
+
+      // When chipboard reaches center, start packaging animation
+      if (chipboardX <= targetX) {
+        clearInterval(chipboardSlideInterval);
+        chipboard.style.left = targetX + 'px';
+        console.log('Chipboard centered, starting packaging...');
+
+        // Start packaging animation after short delay
+        setTimeout(() => {
+          startPackagingAnimation();
+        }, 500);
+      }
+    }, 400); // 400ms per frame
+
+    // Animation Step 2: Package the chipboard with top and bottom covers
+    function startPackagingAnimation() {
+      // Show both covers
+      topCover.style.display = 'block';
+      bottomCover.style.display = 'block';
+
+      let topY = -400; // Start above screen
+      let bottomY = 800; // Start below screen
+      const topTargetY = 230; // Top cover final position (slightly above chipboard top)
+      const bottomTargetY = 230; // Bottom cover final position (below chipboard, like a base)
+      const frameSize = 25; // Movement per frame
+
+      const packageInterval = setInterval(() => {
+        // Check if next move would overshoot, if so move to exact target
+        if (topY + frameSize >= topTargetY) {
+          topY = topTargetY;
+        } else {
+          topY += frameSize;
+        }
+        topCover.style.top = topY + 'px';
+
+        // Check if next move would overshoot, if so move to exact target
+        if (bottomY - frameSize <= bottomTargetY) {
+          bottomY = bottomTargetY;
+        } else {
+          bottomY -= frameSize;
+        }
+        bottomCover.style.top = bottomY + 'px';
+
+        // When both reach their exact target positions
+        if (topY === topTargetY && bottomY === bottomTargetY) {
+          clearInterval(packageInterval);
+          console.log('Packaging complete');
+
+          // Start next sequence after short delay
+          setTimeout(() => {
+            showTeams();
+          }, 1000);
+        }
+      }, 400); // 400ms per frame
+    }
+
+    // Step 3: Show two teams with flags
+    function showTeams() {
+      console.log('Showing teams...');
+
+      // Create team 1 (left side, vertically centered)
+      const team1 = document.createElement('img');
+      team1.src = 'team-1.png';
+      team1.style.cssText = `
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 250px;
+        height: auto;
+        z-index: 15;
+      `;
+      wrapper.appendChild(team1);
+
+      // Create palestine flag for team 1 (left)
+      const flag1a = document.createElement('img');
+      flag1a.src = 'palestine.png';
+      flag1a.style.cssText = `
+        position: absolute;
+        left: 80px;
+        top: 60%;
+        transform: translateY(100px);
+        width: 60px;
+        height: auto;
+        z-index: 15;
+      `;
+      wrapper.appendChild(flag1a);
+
+      // Create egypt flag for team 1 (right)
+      const flag1b = document.createElement('img');
+      flag1b.src = 'egypt.png';
+      flag1b.style.cssText = `
+        position: absolute;
+        left: 160px;
+        top: 60%;
+        transform: translateY(100px);
+        width: 60px;
+        height: auto;
+        z-index: 15;
+      `;
+      wrapper.appendChild(flag1b);
+
+      // Create team 2 (right side, vertically centered)
+      const team2 = document.createElement('img');
+      team2.src = 'team-2.png';
+      team2.style.cssText = `
+        position: absolute;
+        right: 70px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 250px;
+        height: auto;
+        z-index: 15;
+      `;
+      wrapper.appendChild(team2);
+
+      // Create japan flag for team 2 (centered below)
+      const flag2 = document.createElement('img');
+      flag2.src = 'japan.png';
+      flag2.style.cssText = `
+        position: absolute;
+        right: 115px;
+        top: 60%;
+        transform: translateY(100px);
+        width: 60px;
+        height: auto;
+        z-index: 15;
+      `;
+      wrapper.appendChild(flag2);
+
+      // After teams appear, transform to machine
+      setTimeout(() => {
+        transformToMachine();
+      }, 1500);
+    }
+
+    // Step 4: Transform packaging to mch.png
+    function transformToMachine() {
+      console.log('Transforming to machine...');
+
+      // Hide packaging parts
+      chipboard.style.display = 'none';
+      topCover.style.display = 'none';
+      bottomCover.style.display = 'none';
+
+      // Create mch.png (400px wide, same as covers for seamless transition)
+      const machine = document.createElement('img');
+      machine.id = 'machine';
+      machine.src = 'mch.png';
+      machine.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 230px;
+        width: 400px;
+        height: auto;
+        z-index: 5;
+      `;
+      wrapper.appendChild(machine);
+
+      // Start moving machine down
+      setTimeout(() => {
+        moveMachineDown(machine);
+      }, 500);
+    }
+
+    // Step 5: Move machine down frame by frame
+    function moveMachineDown(machine) {
+      console.log('Moving machine down...');
+
+      let machineY = 230;
+      const targetY = 280; // Move down 50px
+      const frameSize = 5; // Small increments for slow movement
+
+      const moveInterval = setInterval(() => {
+        machineY += frameSize;
+        machine.style.top = machineY + 'px';
+
+        if (machineY >= targetY) {
+          clearInterval(moveInterval);
+          machine.style.top = targetY + 'px';
+          console.log('Machine movement complete');
+
+          // Show AX
+          setTimeout(() => {
+            showAX(machine);
+          }, 500);
+        }
+      }, 400); // 400ms per frame
+    }
+
+    // Step 6: Show AX and flicker through frames
+    function showAX(machine) {
+      console.log('Showing AX...');
+
+      // Create AX element
+      const ax = document.createElement('img');
+      ax.src = 'ax-1.png';
+      ax.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 150px;
+        width: 200px;
+        height: auto;
+        z-index: 20;
+      `;
+      wrapper.appendChild(ax);
+
+      // Flicker through ax-1 to ax-5 slowly (KEEPS FLICKERING FOREVER)
+      const axFrames = ['ax-1.png', 'ax-2.png', 'ax-3.png', 'ax-4.png', 'ax-5.png'];
+      let currentFrame = 0;
+
+      setInterval(() => {
+        currentFrame = (currentFrame + 1) % axFrames.length;
+        ax.src = axFrames[currentFrame];
+      }, 600); // Slow flicker (600ms per frame) - continues until scene ends
+
+      // Start background wipe after short delay (AX keeps flickering)
+      setTimeout(() => {
+        wipeBackground(machine);
+      }, 2000);
+    }
+
+    // Step 7: Wipe background from center outward
+    function wipeBackground(machine) {
+      console.log('Wiping background...');
+
+      // Create background image
+      const bg = document.createElement('img');
+      bg.src = 'bg.png';
+      bg.style.cssText = `
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 1280px;
+        height: 0;
+        transform: translateY(-50%);
+        z-index: 1;
+        object-fit: cover;
+      `;
+      wrapper.appendChild(bg);
+
+      // Animate height from 0 to full (800px) - expands from center
+      let bgHeight = 0;
+      const wipeInterval = setInterval(() => {
+        bgHeight += 50; // Expand by 50px per frame
+        bg.style.height = bgHeight + 'px';
+
+        if (bgHeight >= 800) {
+          clearInterval(wipeInterval);
+          bg.style.height = '800px';
+          bg.style.top = '0';
+          bg.style.transform = 'none';
+          console.log('Background wipe complete');
+
+          // Grow machine
+          setTimeout(() => {
+            growMachine(machine);
+          }, 500);
+        }
+      }, 400); // 400ms per frame
+    }
+
+    // Step 8: Make machine bigger
+    function growMachine(machine) {
+      console.log('Growing machine...');
+
+      let machineWidth = 400;
+      const targetWidth = 500; // Grow by 100px
+
+      const growInterval = setInterval(() => {
+        machineWidth += 10;
+        machine.style.width = machineWidth + 'px';
+
+        if (machineWidth >= targetWidth) {
+          clearInterval(growInterval);
+          machine.style.width = targetWidth + 'px';
+          console.log('Machine growth complete - scene finished');
+
+          // Notify parent window that scene is complete
+          setTimeout(() => {
+            window.parent.postMessage('sc5-complete', '*');
+          }, 2000);
+        }
+      }, 400); // 400ms per frame
+    }
+  </script>
+</body>
+</html>

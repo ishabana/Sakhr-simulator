@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SC1 - Layered Sliding Animation</title>
-
+  <title>SC2 - Character Walking</title>
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="../../../design-system/fonts.css">
-  <link rel="stylesheet" href="../../../design-system/tokens.css">
-
+  <link rel="stylesheet" href="../../fonts.css">
   <!-- Animation System CSS -->
   <link rel="stylesheet" href="../../styles/animation-base.css">
   <link rel="stylesheet" href="../../styles/text-boxes.css">
-
   <style>
     /* Override to use proper centering from animation-base.css */
     body {
@@ -24,7 +20,6 @@
       margin: 0;
       overflow: hidden;
     }
-
     .screen-container {
       position: relative;
       width: 1280px;
@@ -32,14 +27,12 @@
       background: #000000;
       overflow: hidden;
     }
-
     #scene-container {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: #000000;
     }
   </style>
 </head>
@@ -51,112 +44,80 @@
       جاري التحميل...
     </div>
   </div>
-
   <!-- Animation Engine Scripts -->
   <script src="../../engine/typewriter.js"></script>
   <script src="../../engine/sprite-animator.js"></script>
   <script src="../../engine/audio-player.js"></script>
   <script src="../../engine/engine.js"></script>
-
   <script>
-    // Scene 1 configuration - Layered sliding from right to left frame by frame
-    const SC1_CONFIG = {
+    // Scene 2 configuration
+    const SC2_CONFIG = {
       "duration": 10000,
-      "backgroundColor": "#000000",
+      "background": "bg.png",
       "autoAdvance": false
     };
-
+    // Walking animation frames
+    const walkFrames = ['1.png', '2.png', '3.png'];
     // Add callback to notify parent when scene ends
-    SC1_CONFIG.onEnd = () => {
-      console.log('SC1 ended');
+    SC2_CONFIG.onEnd = () => {
+      console.log('SC2 ended');
       setTimeout(() => {
-        window.parent.postMessage('sc1-complete', '*');
+        window.parent.postMessage('sc2-complete', '*');
       }, 1000);
     };
-
-    // Frame-by-frame slide helper
-    function slideFrameByFrame(element, positions, frameDelay, onComplete) {
-      let posIndex = 0;
-      element.style.left = positions[0] + 'px';
-      
-      const interval = setInterval(() => {
-        posIndex++;
-        if (posIndex >= positions.length) {
-          clearInterval(interval);
-          if (onComplete) onComplete();
-          return;
-        }
-        element.style.left = positions[posIndex] + 'px';
-      }, frameDelay);
-      
-      return interval;
-    }
-
     // Play scene
     window.addEventListener('load', () => {
-      if (window.audioPlayer) {
-        try {
-          window.audioPlayer.stopMusic();
-          window.audioPlayer.playMusic('../../audio/music/ch3-theme.mp3', {
-            volume: 0.7,
-            loop: false
-          });
-          console.log('SC1: Intro sound started');
-        } catch (e) {
-          console.log('Sound file not found (optional):', e);
-        }
-      }
-
       // Create and setup scene
       const container = document.getElementById('scene-container');
       container.innerHTML = '';
       container.classList.remove('loading');
-      container.style.background = SC1_CONFIG.backgroundColor;
-
-      // Time 0: Show front.png centered
+      // Create background
+      const bg = document.createElement('img');
+      bg.src = SC2_CONFIG.background;
+      bg.className = 'scene-bg';
+      bg.alt = 'Scene Background';
+      container.appendChild(bg);
+      // Show front.png
       const front = document.createElement('img');
       front.src = 'front.png';
       front.className = 'sprite';
-      front.style.width = '800px';
+      front.style.width = '1020px';
       front.style.left = '50%';
-      front.style.top = '50%';
-      front.style.transform = 'translate(-50%, -50%)';
+      front.style.bottom = '0';
+      front.style.transform = 'translateX(-50%)';
       front.style.zIndex = '10';
       container.appendChild(front);
-
-      // Time 1500: Book appears from the right
+      // Time 2000: Character walks in from right to left
       setTimeout(() => {
-        const book = document.createElement('img');
-        book.id = 'book';
-        book.src = 'book.png';
-        book.className = 'sprite';
-        book.style.width = '300px';
-        book.style.top = '50%';
-        book.style.transform = 'translateY(-50%)';
-        book.style.zIndex = '5';
-        container.appendChild(book);
-
-        // Book slides from right to left (behind front)
-        const bookPositions = [1300, 1100, 900, 700, 500, 300, 100, -100];
-        slideFrameByFrame(book, bookPositions, 300);
-      }, 1500);
-
-      // Time 4000: Change front image to front-2 (no sliding!)
-      setTimeout(() => {
-        front.src = 'front-2.png';
-      }, 4000);
-
-      // Time 6500: Change front image to front-3 (no sliding!)
-      setTimeout(() => {
-        front.src = 'front-3.png';
-      }, 6500);
-
+        const character = document.createElement('img');
+        character.src = walkFrames[0];
+        character.className = 'sprite';
+        character.style.width = '370px';
+        character.style.bottom = '80px';
+        character.style.zIndex = '100';
+        container.appendChild(character);
+        // Frame-by-frame walking animation with position + frame changes (right to left)
+        const positions = [1380, 1280, 1180, 1080, 980, 930];
+        let posIndex = 0;
+        let frameIndex = 0;
+        character.style.left = positions[0] + 'px';
+        const walkInterval = setInterval(() => {
+          posIndex++;
+          frameIndex = (frameIndex + 1) % walkFrames.length;
+          if (posIndex >= positions.length) {
+            clearInterval(walkInterval);
+            return;
+          }
+          character.src = walkFrames[frameIndex];
+          character.style.left = positions[posIndex] + 'px';
+        }, 400);
+      }, 2000);
       // Schedule scene end
       setTimeout(() => {
-        if (SC1_CONFIG.onEnd) {
-          SC1_CONFIG.onEnd();
+        if (SC2_CONFIG.onEnd) {
+          SC2_CONFIG.onEnd();
         }
-      }, SC1_CONFIG.duration);
+      }, SC2_CONFIG.duration);
     });
   </script>
 </body>

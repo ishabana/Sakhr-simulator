@@ -1,0 +1,2 @@
+1- scene starts with bg.png and b1.png standing beside b2-2.png on the left side of the canvas
+2- team.png starts sliding from left to right until it reaches a bit more after the half of the canvas

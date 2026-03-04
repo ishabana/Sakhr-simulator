@@ -1,0 +1,78 @@
+{
+  "duration": 15000,
+  "background": "bg.png",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showText",
+      "config": {
+        "id": "narration",
+        "text": "في عام ١٩٨٢، دخل رجل إلى مكتب شركة صخر للبرمجيات في الكويت حاملاً حلماً بتعريب الحاسوب",
+        "type": "overlay",
+        "position": {
+          "x": "center",
+          "y": "10%"
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "fontSize": "24px",
+          "lineHeight": "1.5",
+          "textAlign": "center",
+          "maxWidth": "90%"
+        },
+        "animation": {
+          "type": "typewriter",
+          "speed": 80,
+          "showCursor": true
+        }
+      }
+    },
+    {
+      "time": 7000,
+      "action": "showSprite",
+      "config": {
+        "id": "staticChars",
+        "image": "still.png",
+        "position": {
+          "x": "right-100px",
+          "y": "bottom-40px"
+        },
+        "width": "560px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 8000,
+      "action": "animateSprite",
+      "config": {
+        "id": "walkingChar",
+        "frames": [
+          "1.png",
+          "2.png",
+          "2-1.png",
+          "3.png",
+          "4.png",
+          "5.png",
+          "6.png",
+          "7.png"
+        ],
+        "positions": [
+          {"x": 25, "y": "bottom-75px"},
+          {"x": 50, "y": "bottom-75px"},
+          {"x": 75, "y": "bottom-75px"},
+          {"x": 94, "y": "bottom-75px"},
+          {"x": 112, "y": "bottom-75px"},
+          {"x": 125, "y": "bottom-75px"},
+          {"x": 135, "y": "bottom-75px"},
+          {"x": 140, "y": "bottom-75px"}
+        ],
+        "frameDelay": 400,
+        "width": "470px",
+        "zIndex": 10
+      }
+    }
+  ]
+}

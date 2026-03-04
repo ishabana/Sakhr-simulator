@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC3 - Characters Animation</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Scene Container -->
+  <div id="scene-container" class="loading">
+    جاري التحميل...
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 3 configuration
+    const SC3_CONFIG = {
+      duration: 20000, // 20 seconds
+      background: 'bg.png',
+      timeline: [
+        {
+          time: 0,
+          action: 'showText',
+          config: {
+            id: 'dialogue',
+            text: 'أنا معرفش بس هاعملهالك',
+            type: 'overlay',
+            position: {
+              x: 'center',
+              y: '15%'
+            },
+            style: {
+              color: '#000000',
+              fontSize: '32px',
+              lineHeight: '1.5',
+              textAlign: 'center',
+              maxWidth: '90%',
+              fontFamily: "'FF Sakhr', monospace",
+              textShadow: 'none'
+            },
+            animation: {
+              type: 'typewriter',
+              speed: 80,
+              showCursor: true
+            }
+          }
+        },
+        {
+          time: 0,
+          action: 'animateSprite',
+          config: {
+            id: 'char1',
+            frames: [
+              '01.png',
+              '02.png',
+              '03.png'
+            ],
+            positions: [
+              { x: '15%', y: 'bottom-50px' },
+              { x: '15%', y: 'bottom-50px' },
+              { x: '15%', y: 'bottom-50px' }
+            ],
+            frameDelay: 600,
+            width: '380px',
+            zIndex: 10
+          }
+        },
+        {
+          time: 1800,
+          action: 'animateSprite',
+          config: {
+            id: 'char2',
+            frames: [
+              '1.png',
+              '2.png',
+              '3.png',
+              '4.png',
+              '3.png',
+              '4.png',
+              '3.png',
+              '4.png',
+              '5.png',
+              '4.png',
+              '5.png',
+              '4.png',
+              '5.png'
+            ],
+            positions: [
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' },
+              { x: 'right-20%', y: 'bottom-50px' }
+            ],
+            frameDelay: 600,
+            width: '400px',
+            zIndex: 10
+          }
+        }
+      ]
+    };
+    // Add callback to notify parent when scene ends
+    SC3_CONFIG.onEnd = () => {
+      console.log('SC3 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc3-complete', '*');
+      }, 1000);
+    };
+    // Start scene when page loads
+    window.addEventListener('load', () => {
+      const container = document.getElementById('scene-container');
+      const scenePlayer = new ScenePlayer(SC3_CONFIG, container);
+      scenePlayer.play();
+      console.log('SC3: Two characters animation started (20 seconds)');
+    });
+  </script>
+</body>
+</html>

@@ -4,15 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SC4 - Sliding Backgrounds and Counter</title>
-
   <!-- Design System CSS -->
-  <link rel="stylesheet" href="../../../design-system/fonts.css">
-  <link rel="stylesheet" href="../../../design-system/tokens.css">
-
+  <link rel="stylesheet" href="../../fonts.css">
   <!-- Animation System CSS -->
   <link rel="stylesheet" href="../../styles/animation-base.css">
   <link rel="stylesheet" href="../../styles/text-boxes.css">
-
   <style>
     /* Override to use proper centering from animation-base.css */
     body {
@@ -24,7 +20,6 @@
       margin: 0;
       overflow: hidden;
     }
-
     .screen-container {
       position: relative;
       width: 1280px;
@@ -32,7 +27,6 @@
       background: #3187f8;
       overflow: hidden;
     }
-
     #scene-container {
       position: absolute;
       top: 0;
@@ -41,14 +35,13 @@
       height: 100%;
       background: #3187f8;
     }
-
     .counter-text {
       position: absolute;
-      top: 80px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
       font-family: 'FF Sakhr', 'Arial', sans-serif;
-      font-size: 72px;
+      font-size: 200px;
       font-weight: bold;
       color: #FFFFFF;
       text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
@@ -64,13 +57,11 @@
       جاري التحميل...
     </div>
   </div>
-
   <!-- Animation Engine Scripts -->
   <script src="../../engine/typewriter.js"></script>
   <script src="../../engine/sprite-animator.js"></script>
   <script src="../../engine/audio-player.js"></script>
   <script src="../../engine/engine.js"></script>
-
   <script>
     // Scene 4 configuration
     const SC4_CONFIG = {
@@ -78,9 +69,7 @@
       "backgroundColor": "#3187f8",
       "autoAdvance": false
     };
-
     let counterInterval = null;
-
     // Add callback to notify parent when scene ends
     SC4_CONFIG.onEnd = () => {
       console.log('SC4 ended');
@@ -89,15 +78,12 @@
         window.parent.postMessage('sc4-complete', '*');
       }, 1000);
     };
-
     // Frame-by-frame slide from left to right
     function slideFrameByFrame(element, startX, endX, frameCount, frameDelay, onComplete) {
       const stepSize = (endX - startX) / frameCount;
       let currentX = startX;
       let currentFrame = 0;
-      
       element.style.left = currentX + 'px';
-      
       const interval = setInterval(() => {
         currentFrame++;
         if (currentFrame >= frameCount) {
@@ -110,7 +96,6 @@
         element.style.left = currentX + 'px';
       }, frameDelay);
     }
-
     // Counter animation from 10000 to 800000
     function startCounter(counterElement) {
       let currentValue = 10000;
@@ -119,43 +104,26 @@
       const steps = 50;
       const stepDelay = duration / steps;
       const stepSize = (targetValue - currentValue) / steps;
-      
-      counterElement.textContent = currentValue.toLocaleString('ar-EG');
-      
+      counterElement.textContent = currentValue;
       counterInterval = setInterval(() => {
         currentValue += stepSize;
         if (currentValue >= targetValue) {
           currentValue = targetValue;
-          counterElement.textContent = currentValue.toLocaleString('ar-EG');
+          counterElement.textContent = currentValue;
           clearInterval(counterInterval);
           return;
         }
-        counterElement.textContent = Math.round(currentValue).toLocaleString('ar-EG');
+        counterElement.textContent = Math.round(currentValue);
       }, stepDelay);
     }
-
     // Play scene
     window.addEventListener('load', () => {
-      if (window.audioPlayer) {
-        try {
-          window.audioPlayer.stopMusic();
-          window.audioPlayer.playMusic('../../audio/music/ch2-theme.mp3', {
-            volume: 0.7,
-            loop: false
-          });
-          console.log('SC4: Intro sound started');
-        } catch (e) {
-          console.log('Sound file not found (optional):', e);
-        }
-      }
-
       // Create and setup scene
       const container = document.getElementById('scene-container');
       container.innerHTML = '';
       container.classList.remove('loading');
       container.style.background = SC4_CONFIG.backgroundColor;
-
-      // Time 1000: bg1.png slides in from left to right
+      // Time 1000: bg1.png slides in from right to left
       setTimeout(() => {
         const bg1 = document.createElement('img');
         bg1.id = 'bg1';
@@ -165,47 +133,34 @@
         bg1.style.top = '200px';
         bg1.style.zIndex = '5';
         container.appendChild(bg1);
-        
-        slideFrameByFrame(bg1, -900, 0, 8, 250);
+        // Start from right (offscreen at 1280px) and slide to 420px
+        slideFrameByFrame(bg1, 1280, 420, 8, 250);
       }, 1000);
-
-      // Time 4000: bg1 turns into bg2
+      // Time 4000: bg1 turns into bg2 (no additional movement)
       setTimeout(() => {
         const bg1 = document.getElementById('bg1');
         if (bg1) {
           bg1.src = 'bg2.png';
         }
       }, 4000);
-
-      // Time 5000: bg2 continues sliding to expose left third
-      setTimeout(() => {
-        const bg2 = document.getElementById('bg1');
-        if (bg2) {
-          slideFrameByFrame(bg2, 0, 420, 6, 250);
-        }
-      }, 5000);
-
       // Time 7000: 1.png appears in the empty third
       setTimeout(() => {
         const char1 = document.createElement('img');
         char1.src = '1.png';
         char1.className = 'sprite';
-        char1.style.width = '350px';
-        char1.style.left = '50px';
-        char1.style.bottom = '150px';
+        char1.style.width = '330px';
+        char1.style.left = '90px';
+        char1.style.bottom = '-250px';
         char1.style.zIndex = '10';
         container.appendChild(char1);
       }, 7000);
-
       // Time 7500: Counter starts
       setTimeout(() => {
         const counter = document.createElement('div');
         counter.className = 'counter-text';
         container.appendChild(counter);
-        
         startCounter(counter);
       }, 7500);
-
       // Schedule scene end
       setTimeout(() => {
         if (SC4_CONFIG.onEnd) {

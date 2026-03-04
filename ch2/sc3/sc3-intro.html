@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC3 - Sakhr & Partnership Intro</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    body {
+      background: #000000;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+    .sprite {
+      position: absolute;
+      image-rendering: auto;
+    }
+    /* SVG lines for drawing animation */
+    .line-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .animated-line {
+      fill: none;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 3 configuration
+    const SC3_CONFIG = {
+      "duration": 15000,
+      "backgroundColor": "#000000",
+      "autoAdvance": false
+    };
+    // Add callback to notify parent when scene ends
+    SC3_CONFIG.onEnd = () => {
+      console.log('SC3 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc3-complete', '*');
+      }, 1000);
+    };
+    // Frame-by-frame shrink and move animation for sakhr logo
+    // Moves from center to TOP RIGHT
+    function shrinkAndMoveFrameByFrame(element, callback) {
+      const frames = [
+        { scale: 1.0, x: 640, y: 400 },    // Center, full size
+        { scale: 0.95, x: 700, y: 320 },
+        { scale: 0.80, x: 760, y: 240 },
+        { scale: 0.70, x: 820, y: 180 },
+        { scale: 0.65, x: 840, y: 130 },   // Top-right, small - change y value to adjust top position
+      ];
+      let frameIndex = 0;
+      const frameDelay = 150;
+      element.style.transform = `translate(-50%, -50%) scale(${frames[0].scale})`;
+      element.style.left = frames[0].x + 'px';
+      element.style.top = frames[0].y + 'px';
+      const interval = setInterval(() => {
+        frameIndex++;
+        if (frameIndex >= frames.length) {
+          clearInterval(interval);
+          if (callback) callback();
+          return;
+        }
+        const frame = frames[frameIndex];
+        element.style.transform = `translate(-50%, -50%) scale(${frame.scale})`;
+        element.style.left = frame.x + 'px';
+        element.style.top = frame.y + 'px';
+      }, frameDelay);
+    }
+    // Frame-by-frame appear animation (fade in steps)
+    function appearFrameByFrame(element, callback) {
+      const opacitySteps = [0, 0.25, 0.5, 0.75, 1.0];
+      let stepIndex = 0;
+      const frameDelay = 100;
+      element.style.opacity = opacitySteps[0];
+      element.style.visibility = 'visible';
+      const interval = setInterval(() => {
+        stepIndex++;
+        if (stepIndex >= opacitySteps.length) {
+          clearInterval(interval);
+          if (callback) callback();
+          return;
+        }
+        element.style.opacity = opacitySteps[stepIndex];
+      }, frameDelay);
+    }
+    // Frame-by-frame line drawing
+    function drawLineFrameByFrame(pathElement, callback) {
+      const totalLength = pathElement.getTotalLength();
+      const steps = 90;
+      const stepLength = totalLength / steps;
+      let currentStep = 0;
+      const frameDelay = 60;
+      pathElement.style.strokeDasharray = totalLength;
+      pathElement.style.strokeDashoffset = totalLength;
+      const interval = setInterval(() => {
+        currentStep++;
+        const offset = totalLength - (currentStep * stepLength);
+        pathElement.style.strokeDashoffset = Math.max(0, offset);
+        if (currentStep >= steps) {
+          pathElement.style.strokeDashoffset = 0;
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, frameDelay);
+    }
+    // Frame-by-frame wipe from bottom up
+    function wipeUpFrameByFrame(element, callback) {
+      const totalHeight = element.naturalHeight || 200;
+      const steps = 15;
+      let currentStep = 0;
+      const frameDelay = 80;
+      element.style.clipPath = 'polygon(0 100%, 100% 100%, 100% 100%, 0 100%)';
+      element.style.visibility = 'visible';
+      const interval = setInterval(() => {
+        currentStep++;
+        const topPercent = 100 - (currentStep / steps * 100);
+        if (topPercent <= 0) {
+          element.style.clipPath = 'none';
+          clearInterval(interval);
+          if (callback) callback();
+          return;
+        }
+        element.style.clipPath = `polygon(0 ${topPercent}%, 100% ${topPercent}%, 100% 100%, 0 100%)`;
+      }, frameDelay);
+    }
+    // Frame-by-frame slide up appearance
+    // Uses the top value already set on the element as the starting point
+    function slideUpFrameByFrame(element, finalY, callback) {
+      // Get starting position from element's top style, or use default
+      let startY = parseInt(element.style.top);
+      if (isNaN(startY)) {
+        startY = finalY + 100;
+        element.style.top = startY + 'px';
+      }
+      const distance = startY - finalY;
+      const steps = 8;
+      let currentStep = 0;
+      const frameDelay = 100;
+      // Now show the element (it already has its starting position set)
+      element.style.visibility = 'visible';
+      element.style.opacity = '1';
+      const interval = setInterval(() => {
+        currentStep++;
+        const progress = currentStep / steps;
+        const currentY = startY - (progress * distance);
+        element.style.top = currentY + 'px';
+        if (currentStep >= steps) {
+          element.style.top = finalY + 'px';
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, frameDelay);
+    }
+    // Play scene
+    window.addEventListener('load', () => {
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('arab-leage.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC3: Intro sound started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = SC3_CONFIG.backgroundColor;
+      // ===== Step 1: Sakhr logo starts big, centered =====
+      const sakhrLogo = document.createElement('img');
+      sakhrLogo.src = 'sakhr.png';
+      sakhrLogo.className = 'sprite';
+      sakhrLogo.style.width = '500px';
+      sakhrLogo.style.left = '640px';
+      sakhrLogo.style.top = '400px';
+      sakhrLogo.style.transform = 'translate(-50%, -50%)';
+      sakhrLogo.style.zIndex = '10';
+      container.appendChild(sakhrLogo);
+      // ===== Step 2: After 1 second, shrink and move to top-right =====
+      setTimeout(() => {
+        shrinkAndMoveFrameByFrame(sakhrLogo, () => {
+          console.log('Sakhr logo moved to position');
+        });
+      }, 1000);
+      // ===== Step 3: 170.png appears opposite (top-left) =====
+      setTimeout(() => {
+        const machine170 = document.createElement('img');
+        machine170.src = '170.png';
+        machine170.className = 'sprite';
+        machine170.style.width = '300px';
+        machine170.style.left = '400px';
+        machine170.style.top = '70px';
+        machine170.style.transform = 'translate(-50%, 0)';
+        machine170.style.zIndex = '10';
+        machine170.style.visibility = 'hidden';
+        container.appendChild(machine170);
+        appearFrameByFrame(machine170);
+      }, 2500);
+      // ===== Step 4: Create SVG for lines =====
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
+      svg.setAttribute("class", "line-svg");
+      svg.setAttribute("viewBox", "0 0 1280 800");
+      svg.style.zIndex = '5';
+      container.appendChild(svg);
+      // BLUE LINE: First draws horizontal between sakhr and 170,
+      // then from middle goes down, turns left, then down to f-1/f-2
+      // Path: horizontal at top, then from center -> down -> left -> down
+      const blueLine = document.createElementNS(svgNS, "path");
+      blueLine.setAttribute("d",
+        "M 580 150 L 670 150 " +  // Horizontal line from 170 to sakhr (slightly angled)
+        "M 600 150 " +             // Start from middle of horizontal line
+        "L 600 450 " +             // Down
+        "L 450 450 " +             // Left (toward green Alef area)
+        "L 450 520"                // Down to p machines on LEFT
+      );
+      blueLine.setAttribute("class", "animated-line");
+      blueLine.setAttribute("stroke", "#0066CC");
+      blueLine.setAttribute("stroke-width", "4");
+      svg.appendChild(blueLine);
+      // RED LINE: From sakhr, goes left, down, right, down to p-1/p-2
+      // Path: start at sakhr -> left -> down -> right -> down (avoiding overlap)
+      const redLine = document.createElementNS(svgNS, "path");
+      redLine.setAttribute("d",
+        "M 670 170 " +            // Start from sakhr
+        "L 630 170 " +             // Left
+        "L 630 450 " +             // Down (passing blue line's horizontal)
+        "L 750 450 " +             // Right (toward Perfect logo area)
+        "L 750 520"                // Down to f machines on RIGHT
+      );
+      redLine.setAttribute("class", "animated-line");
+      redLine.setAttribute("stroke", "#CC0000");
+      redLine.setAttribute("stroke-width", "4");
+      svg.appendChild(redLine);
+      // Hide lines initially
+      blueLine.style.strokeDasharray = blueLine.getTotalLength();
+      blueLine.style.strokeDashoffset = blueLine.getTotalLength();
+      redLine.style.strokeDasharray = redLine.getTotalLength();
+      redLine.style.strokeDashoffset = redLine.getTotalLength();
+      // ===== Step 5: Draw blue line first =====
+      setTimeout(() => {
+        drawLineFrameByFrame(blueLine, () => {
+          console.log('Blue line drawn');
+        });
+      }, 3200);
+      // ===== Step 6: Draw red line =====
+      setTimeout(() => {
+        drawLineFrameByFrame(redLine, () => {
+          console.log('Red line drawn');
+        });
+      }, 4000);
+      // ===== Step 7: logo-f.png (green Alef - Al-Alamiyya) wipes up on LEFT side =====
+      setTimeout(() => {
+        const logoF = document.createElement('img');
+        logoF.src = 'logo-f.png';
+        logoF.className = 'sprite';
+        logoF.style.width = '340px';
+        logoF.style.left = '180px';
+        logoF.style.top = '260px';
+        logoF.style.transform = 'translate(-50%, 0)';
+        logoF.style.zIndex = '8';
+        logoF.style.visibility = 'hidden';
+        container.appendChild(logoF);
+        logoF.onload = () => {
+          wipeUpFrameByFrame(logoF, () => {
+            console.log('Logo F (Green Alef) wiped up');
+          });
+        };
+        if (logoF.complete) {
+          wipeUpFrameByFrame(logoF, () => {
+            console.log('Logo F (Green Alef) wiped up');
+          });
+        }
+      }, 3500);
+      // ===== Step 8: logo-b.png (Perfect/المثالي) wipes up on RIGHT side =====
+      setTimeout(() => {
+        const logoB = document.createElement('img');
+        logoB.src = 'logo-b.png';
+        logoB.className = 'sprite';
+        logoB.style.width = '270px';
+        logoB.style.left = '1000px';
+        logoB.style.top = '270px';
+        logoB.style.transform = 'translate(-50%, 0)';
+        logoB.style.zIndex = '8';
+        logoB.style.visibility = 'hidden';
+        container.appendChild(logoB);
+        logoB.onload = () => {
+          wipeUpFrameByFrame(logoB, () => {
+            console.log('Logo B (Perfect) wiped up');
+          });
+        };
+        if (logoB.complete) {
+          wipeUpFrameByFrame(logoB, () => {
+            console.log('Logo B (Perfect) wiped up');
+          });
+        }
+      }, 4200);
+      // ===== Step 9: p-1.png appears under logo-b.png (LEFT stack bottom) =====
+      setTimeout(() => {
+        const p1 = document.createElement('img');
+        p1.src = 'f-2.png';
+        p1.className = 'sprite';
+        p1.style.width = '400px';
+        p1.style.left = '280px';
+        p1.style.top = '730px';
+        p1.style.transform = 'translate(-50%, 0)';
+        p1.style.zIndex = '6';
+        p1.style.visibility = 'hidden';
+        p1.style.opacity = '0';
+        container.appendChild(p1);
+        slideUpFrameByFrame(p1, 470, () => {
+          console.log('P1 appeared');
+        });
+      }, 5500);
+      // ===== Step 10: f-1.png appears under logo-f.png (RIGHT stack bottom) =====
+      setTimeout(() => {
+        const f1 = document.createElement('img');
+        f1.src = 'p-2.png';
+        f1.className = 'sprite';
+        f1.style.width = '420px';
+        f1.style.left = '1000px';
+        f1.style.transform = 'translate(-50%, 0)';
+        f1.style.zIndex = '6';
+        f1.style.visibility = 'hidden';
+        f1.style.opacity = '0';
+        container.appendChild(f1);
+        slideUpFrameByFrame(f1, 460, () => {
+          console.log('F1 appeared');
+        });
+      }, 5800);
+      // ===== Step 11: p-2.png appears above p-1.png (LEFT stack top) =====
+      setTimeout(() => {
+        const p2 = document.createElement('img');
+        p2.src = 'f-1.png';
+        p2.className = 'sprite';
+        p2.style.width = '380px';
+        p2.style.left = '350px';
+        p2.style.transform = 'translate(-50%, 0)';
+        p2.style.zIndex = '7';
+        p2.style.visibility = 'hidden';
+        p2.style.opacity = '0';
+        container.appendChild(p2);
+        slideUpFrameByFrame(p2, 560, () => {
+          console.log('P2 appeared');
+        });
+      }, 6800);
+      // ===== Step 12: f-2.png appears above f-1.png (RIGHT stack top) =====
+      setTimeout(() => {
+        const f2 = document.createElement('img');
+        f2.src = 'p-1.png';
+        f2.className = 'sprite';
+        f2.style.width = '420px';
+        f2.style.left = '900px';
+        f2.style.transform = 'translate(-50%, 0)';
+        f2.style.zIndex = '7';
+        f2.style.visibility = 'hidden';
+        f2.style.opacity = '0';
+        container.appendChild(f2);
+        slideUpFrameByFrame(f2, 520, () => {
+          console.log('F2 appeared');
+        });
+      }, 7200);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC3_CONFIG.onEnd) {
+          SC3_CONFIG.onEnd();
+        }
+      }, SC3_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

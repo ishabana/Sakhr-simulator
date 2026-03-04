@@ -1,0 +1,13 @@
+{
+  "chapter": 2,
+  "title": "الفصل الثاني",
+  "music": "../audio/music/ch2-theme.mp3",
+  "musicVolume": 0.7,
+  "scenes": [
+    "sc1/scene.json",
+    "sc2/scene.json",
+    "sc3/scene.json",
+    "sc4/scene.json",
+    "sc5/scene.json"
+  ]
+}

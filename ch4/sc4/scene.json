@@ -1,0 +1,58 @@
+{
+  "duration": 10000,
+  "background": "bg.png",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "char1",
+        "image": "b1-2.png",
+        "position": {
+          "x": 920,
+          "y": "bottom-100px"
+        },
+        "width": "350px",
+        "zIndex": 20
+      }
+    },
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "char2",
+        "image": "b2-3.png",
+        "position": {
+          "x": 700,
+          "y": "bottom-100px"
+        },
+        "width": "500px",
+        "zIndex": 20
+      }
+    },
+    {
+      "time": 1500,
+      "action": "animateSprite",
+      "config": {
+        "id": "team",
+        "frames": ["team.png", "team.png", "team.png", "team.png", "team.png", "team.png", "team.png", "team.png"],
+        "positions": [
+          {"x": -600, "y": "bottom-100px"},
+          {"x": -400, "y": "bottom-100px"},
+          {"x": -200, "y": "bottom-100px"},
+          {"x": 0, "y": "bottom-100px"},
+          {"x": 150, "y": "bottom-100px"},
+          {"x": 280, "y": "bottom-100px"},
+          {"x": 380, "y": "bottom-100px"},
+          {"x": 450, "y": "bottom-100px"}
+        ],
+        "frameDelay": 350,
+        "width": "500px",
+        "zIndex": 15
+      }
+    }
+  ]
+}

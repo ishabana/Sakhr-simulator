@@ -1,0 +1,4 @@
+1- scene starts with front.png on a canvas background with the color grey
+2- the map.png starts to appear from bottom-up frame by frame from behind front.png to be positioned in the empty upper part over the background color of the canvas
+3- all the flags files in the folder starts to be all in the same small size and starts scrolling frame by frame from left to right in loop
+

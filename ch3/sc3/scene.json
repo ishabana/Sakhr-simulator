@@ -1,0 +1,8 @@
+{
+  "duration": 10000,
+  "background": "bg.png",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": []
+}

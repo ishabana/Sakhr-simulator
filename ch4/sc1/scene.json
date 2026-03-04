@@ -1,0 +1,49 @@
+{
+  "duration": 8000,
+  "background": "bg.png",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 0,
+      "action": "showSprite",
+      "config": {
+        "id": "front",
+        "image": "front.png",
+        "position": {
+          "x": "center",
+          "y": "bottom-0"
+        },
+        "width": "500px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 1500,
+      "action": "showText",
+      "config": {
+        "id": "narration",
+        "text": "غامر بفلوسك..اذا نجحت…!",
+        "type": "overlay",
+        "position": {
+          "x": "center",
+          "y": "15%"
+        },
+        "style": {
+          "color": "#FFFFFF",
+          "fontSize": "36px",
+          "fontWeight": "bold",
+          "lineHeight": "1.5",
+          "textAlign": "center",
+          "maxWidth": "90%"
+        },
+        "animation": {
+          "type": "typewriter",
+          "speed": 80,
+          "showCursor": true
+        }
+      }
+    }
+  ]
+}

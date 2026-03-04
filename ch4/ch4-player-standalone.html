@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - الفصل الرابع</title>
+
+  <!-- Embedded Fonts CSS -->
+  <link rel="stylesheet" href="../fonts.css">
+
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../styles/animation-base.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'FF Sakhr', 'Arial', sans-serif;
+    }
+
+    .player-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    #scene-frame {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+
+    .controls {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-btn {
+      background: transparent;
+      border: 2px solid #FFFFFF;
+      color: #FFFFFF;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-family: 'FF Sakhr', monospace;
+      cursor: pointer;
+      transition: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="player-container">
+    <!-- Start Screen -->
+    <div id="startScreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;">
+      <div style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 25px; margin-bottom: 40px; text-align: center;">
+        صخر - الفصل الرابع
+      </div>
+      <button onclick="showMenu()" style="background: #0000ff; border: 3px solid #FFFFFF; color: #FFFFFF; padding: 20px 60px; font-size: 24px; font-family: 'FF Sakhr', monospace; cursor: pointer;">
+        ▶ ابدأ
+      </button>
+    </div>
+
+
+    <!-- Menu Screen -->
+    <div id="menuScreen" style="position: absolute; top: 0; left: 0; width: 1280px; height: 800px; background: #000000; display: none; z-index: 999;">
+      <div style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); width: 900px;">
+        <div id="menu-header" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 30px; text-align: right; line-height: 1.1;">
+          كيف تـ تقدم "عالم صخر"<br>
+          محاكاة شكلية وبرمجية لتخيل مختصر لتاريخ شركة العالمية وبرمجيات صخر
+        </div>
+      </div>
+      <div style="position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 900px;">
+        <div id="menu-prompt" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 25px; text-align: right;">اختر رقمــاً</div>
+      </div>
+      <div style="position: absolute; top: 50%; right: 5%; transform: translate(50%, -50%); width: 600px; margin-right: 500px;">
+        <div id="menu-item-1" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-2" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-3" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+        <div id="menu-item-4" style="color: #FFFFFF; font-family: 'FF Sakhr', monospace; font-size: 36px; margin: 20px 0; text-align: right;"></div>
+      </div>
+    </div>
+
+    <!-- Scene Frame -->
+    <iframe id="scene-frame" class="hidden"></iframe>
+
+    <!-- Controls -->
+    <div class="controls hidden" id="controls">
+      <button class="control-btn" onclick="nextScene()">التالي</button>
+    </div>
+  </div>
+
+  <script>
+
+    // Typewriter effect
+    function typewriterEffect(elementId, text, speed, callback) {
+      const element = document.getElementById(elementId);
+      let index = 0;
+      element.textContent = '';
+
+      const interval = setInterval(() => {
+        if (index < text.length) {
+          element.textContent += text.charAt(index);
+          index++;
+        } else {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    function showMenu() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('menuScreen').style.display = 'block';
+
+      const chapterNumber = 4; // Chapter 4
+
+      // Reset all menu items - clear content and reset colors
+      for (let i = 1; i <= 4; i++) {
+        const menuItem = document.getElementById('menu-item-' + i);
+        menuItem.textContent = '';
+        menuItem.style.color = '#FFFFFF';
+      }
+
+      // Typewriter only menu items
+      setTimeout(() => typewriterEffect('menu-item-1', '1-البداية', 50), 200);
+      setTimeout(() => typewriterEffect('menu-item-2', '2-الانتشار', 50), 600);
+      setTimeout(() => typewriterEffect('menu-item-3', '3-الإجازة', 50), 1000);
+      setTimeout(() => typewriterEffect('menu-item-4', '4-القضية', 50, () => {
+        // After typewriter completes, wait 2 seconds then highlight and start
+        setTimeout(() => {
+          document.getElementById('menu-item-' + chapterNumber).style.color = '#00FF00';
+          setTimeout(() => {
+            startChapter();
+          }, 1000);
+        }, 2000);
+      }), 1400);
+    }
+    // Chapter 4 scenes
+    const scenes = [
+      'sc1/sc1-intro.html',
+      'sc2/sc2-intro.html',
+      'sc3/sc3-intro.html',
+      'sc4/sc4-intro.html',
+      'sc5/sc5-intro.html',
+      'sc6/sc6-intro.html',
+      'sc7/sc7-intro.html'
+    ];
+
+    let currentSceneIndex = 0;
+    let sceneTimeout = null;
+
+    // Start chapter (after menu selection)
+    function startChapter() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('menuScreen').style.display = 'none';
+      document.getElementById('scene-frame').classList.remove('hidden');
+      document.getElementById('controls').classList.remove('hidden');
+      
+      loadScene(0);
+    }
+
+    // Load a scene
+    function loadScene(index) {
+      currentSceneIndex = index;
+      const frame = document.getElementById('scene-frame');
+      frame.src = scenes[index];
+
+      console.log('Loading scene:', scenes[index]);
+    }
+
+    // Next scene
+    function nextScene() {
+      if (sceneTimeout) {
+        clearTimeout(sceneTimeout);
+        sceneTimeout = null;
+      }
+
+      currentSceneIndex = currentSceneIndex + 1;
+
+      // If we've reached the end, loop back to menu instead of sc1
+      if (currentSceneIndex >= scenes.length) {
+        const frame = document.getElementById('scene-frame');
+        frame.src = 'about:blank';
+        frame.classList.add('hidden');
+        document.getElementById('controls').classList.add('hidden');
+        currentSceneIndex = 0;
+        showMenu();
+      } else {
+        loadScene(currentSceneIndex);
+      }
+    }
+
+    // Listen for scene completion messages
+    window.addEventListener('message', (event) => {
+      if (typeof event.data === 'string' && event.data.includes('-complete')) {
+        console.log('Scene completed:', event.data);
+        // Auto-advance to next scene after delay
+        sceneTimeout = setTimeout(() => {
+          nextScene();
+        }, 1000);
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'n' || e.key === 'N') {
+        nextScene();
+      }
+    });
+  </script>
+</body>
+</html>

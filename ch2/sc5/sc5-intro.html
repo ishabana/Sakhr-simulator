@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC5 - Wipe Animation</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    /* Override to use proper centering from animation-base.css */
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #2424B6; /* Sakhr blue */
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #2424B6; /* Sakhr blue */
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 5 configuration
+    const SC5_CONFIG = {
+      "duration": 8000,
+      "backgroundColor": "#2424B6", // Sakhr blue
+      "autoAdvance": false
+    };
+    // Add callback to notify parent when scene ends
+    SC5_CONFIG.onEnd = () => {
+      console.log('SC5 ended');
+      setTimeout(() => {
+        window.parent.postMessage('sc5-complete', '*');
+      }, 1000);
+    };
+    // Frame-by-frame wipe from top to bottom
+    function wipeFromTopFrameByFrame(element, totalHeight, steps, frameDelay) {
+      let currentHeight = 0;
+      const heightStep = totalHeight / steps;
+      element.style.clipPath = 'polygon(0 0, 100% 0, 100% 0, 0 0)';
+      const interval = setInterval(() => {
+        currentHeight += heightStep;
+        if (currentHeight >= totalHeight) {
+          element.style.clipPath = 'none';
+          clearInterval(interval);
+          return;
+        }
+        const bottomPercent = (currentHeight / totalHeight) * 100;
+        element.style.clipPath = `polygon(0 0, 100% 0, 100% ${bottomPercent}%, 0 ${bottomPercent}%)`;
+      }, frameDelay);
+    }
+    // Play scene
+    window.addEventListener('load', () => {
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = SC5_CONFIG.backgroundColor;
+      // Time 1500: front-1.png wipes in from top to bottom
+      setTimeout(() => {
+        const front1 = document.createElement('img');
+        front1.src = 'front-1.png';
+        front1.className = 'sprite';
+        front1.style.width = '800px';
+        front1.style.left = '50%';
+        front1.style.top = '50%';
+        front1.style.transform = 'translate(-50%, -50%)';
+        front1.style.zIndex = '10';
+        container.appendChild(front1);
+        // Wipe from top to bottom frame by frame
+        wipeFromTopFrameByFrame(front1, 800, 10, 150);
+      }, 1500);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC5_CONFIG.onEnd) {
+          SC5_CONFIG.onEnd();
+        }
+      }, SC5_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

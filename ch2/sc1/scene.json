@@ -1,0 +1,45 @@
+{
+  "duration": 12000,
+  "background": "bg-1.png",
+  "autoAdvance": true,
+  "advanceDelay": 1000,
+
+  "timeline": [
+    {
+      "time": 1000,
+      "action": "showSprite",
+      "config": {
+        "id": "character",
+        "image": "1.png",
+        "position": {
+          "x": "right-0",
+          "y": "top-50px"
+        },
+        "width": "300px",
+        "zIndex": 10
+      }
+    },
+    {
+      "time": 2000,
+      "action": "startRaining",
+      "config": {
+        "frames": ["c1.png", "c2.png", "c3.png", "c4.png", "c5.png", "c6.png", "c7.png", "c8.png", "c9.png"],
+        "duration": 6000,
+        "frameSize": "80px",
+        "zIndex": 5
+      }
+    },
+    {
+      "time": 8000,
+      "action": "stopRaining",
+      "config": {}
+    },
+    {
+      "time": 8100,
+      "action": "changeBackground",
+      "config": {
+        "background": "bg2.png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>صخر - المحاكي</title>
+
+  <!-- Sakhr Design System -->
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="tokens.css">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000000 !important;
+    }
+
+    #emulatorContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000 !important;
+    }
+
+    #webmsxFrame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000000 !important;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #webmsxFrame.ready {
+      opacity: 1;
+    }
+
+    #loadingCover {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      z-index: 9999;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Black loading cover -->
+  <div id="loadingCover"></div>
+
+  <!-- Emulator Container -->
+  <div id="emulatorContainer">
+    <iframe id="webmsxFrame" src="" allow="autoplay; fullscreen" scrolling="no" allowfullscreen onload="this.contentWindow.focus();"></iframe>
+  </div>
+
+  <script>
+    const webmsxFrame = document.getElementById('webmsxFrame');
+
+    // Define functions first
+    function goBackToMenu() {
+      // Navigate back to index (keep session storage intact)
+      console.log('[Emulator] Going back to index');
+      window.location.href = 'index.html';
+    }
+
+    // Listen for Ctrl+X message from iframe
+    window.addEventListener('message', function(event) {
+      console.log('[Parent] Message received:', event.data, 'from:', event.origin);
+      if (event.data === 'ctrl-x-pressed') {
+        console.log('[Parent] ✓✓✓ Ctrl+X confirmed - returning to menu ✓✓✓');
+        goBackToMenu();
+      }
+    });
+
+    console.log('[Parent] Message listener registered - waiting for ctrl-x-pressed');
+
+    // Get selected ROM from session storage
+    const selectedROM = JSON.parse(sessionStorage.getItem('selectedROM'));
+
+    if (!selectedROM) {
+      console.error('[Emulator] No ROM selected - redirecting to index');
+      alert('لم يتم اختيار أي برنامج. الرجاء اختيار برنامج من القائمة.');
+      window.location.href = 'index.html';
+      throw new Error('No ROM selected'); // Stop execution
+    }
+
+    console.log('[Emulator] Loading ROM:', selectedROM);
+
+    // Load WebMSX with ROM
+    function loadEmulator() {
+      const webmsxPath = 'webmsx/index.html';
+      const romPath = '/' + selectedROM.path;
+
+      const webmsxURL = `${webmsxPath}?ROM=${encodeURIComponent(romPath)}&SCREEN_FULLSCREEN_MODE=0&AUTO_START=true&AUTO_POWER_ON_DELAY=0&AUDIO_BUFFER_SIZE=256&AUDIO_MONITOR_BUFFER_BASE=0`;
+
+      console.log('[Emulator] Loading WebMSX:', webmsxURL);
+      webmsxFrame.src = webmsxURL;
+
+      // Apply CSS scaling to WebMSX screen
+      webmsxFrame.addEventListener('load', () => {
+        try {
+          const iframeDoc = webmsxFrame.contentDocument || webmsxFrame.contentWindow.document;
+          const iframeWin = webmsxFrame.contentWindow;
+
+          // IMMEDIATELY inject Ctrl+X handler at window level (HIGHEST PRIORITY)
+          if (iframeWin) {
+            console.log('[Emulator] Injecting HIGH PRIORITY Ctrl+X handler into iframe window');
+
+            // Use raw event listener at window level with capture=true
+            iframeWin.addEventListener('keydown', function(e) {
+              console.log('[IframeWin EARLY] Key:', e.key, 'Ctrl:', e.ctrlKey, 'Code:', e.code);
+              if (e.ctrlKey && (e.key === 'x' || e.key === 'X' || e.code === 'KeyX')) {
+                console.log('[IframeWin EARLY] ✓✓✓ Ctrl+X INTERCEPTED ✓✓✓');
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                window.parent.postMessage('ctrl-x-pressed', '*');
+                return false;
+              }
+            }, true); // CAPTURE PHASE
+
+            console.log('[Emulator] ✓ HIGH PRIORITY handler injected');
+          }
+
+          if (iframeDoc) {
+            const style = iframeDoc.createElement('style');
+            style.textContent = `
+              * { margin: 0; padding: 0; }
+              html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                background: #000 !important;
+              }
+              #wmsx-screen {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(1.8);
+                transform-origin: center;
+              }
+              #wmsx-bar { display: none !important; }
+              #wmsx-logo { display: none !important; }
+              .wmsx-notification { display: none !important; }
+              .wmsx-osd { display: none !important; }
+            `;
+            iframeDoc.head.appendChild(style);
+            console.log('[Emulator] CSS applied to WebMSX');
+
+            // Show iframe now that CSS is applied
+            webmsxFrame.classList.add('ready');
+
+            // Remove loading cover
+            const loadingCover = document.getElementById('loadingCover');
+            if (loadingCover) {
+              setTimeout(() => loadingCover.remove(), 300);
+            }
+
+            // AGGRESSIVELY HIDE ALL WMSX UI ELEMENTS AND ACTIVATE AUDIO
+            setTimeout(() => {
+                // Hide ALL possible WebMSX UI elements
+                const hideElements = [
+                  '#wmsx-logo', '#wmsx-bar', '.wmsx-logo', '.wmsx-bar',
+                  '.wmsx-notification', '.wmsx-osd', '[class*="logo"]',
+                  '[class*="Logo"]', '[id*="logo"]', '[id*="Logo"]',
+                  '.wmsx-cover', '#wmsx-cover'
+                ];
+                hideElements.forEach(selector => {
+                  try {
+                    const elements = iframeDoc.querySelectorAll(selector);
+                    elements.forEach(el => {
+                      el.style.display = 'none';
+                      el.style.visibility = 'hidden';
+                      el.style.opacity = '0';
+                      el.remove();
+                    });
+                  } catch(e) {}
+                });
+
+                const canvas = iframeDoc.querySelector('canvas');
+                if (canvas) {
+                  canvas.setAttribute('tabindex', '0');
+
+                  // MULTIPLE CLICK ATTEMPTS ON CANVAS
+                  for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                      const evt = new MouseEvent('mousedown', { bubbles: true, cancelable: true, clientX: 100, clientY: 100 });
+                      canvas.dispatchEvent(evt);
+                      const evt2 = new MouseEvent('mouseup', { bubbles: true, cancelable: true, clientX: 100, clientY: 100 });
+                      canvas.dispatchEvent(evt2);
+                      const evt3 = new MouseEvent('click', { bubbles: true, cancelable: true, clientX: 100, clientY: 100 });
+                      canvas.dispatchEvent(evt3);
+
+                      // Also dispatch to document
+                      iframeDoc.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                      iframeWin.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                    }, i * 100);
+                  }
+
+                  // Try WebMSX API after clicks
+                  setTimeout(() => {
+                    if (iframeWin.wmsx && iframeWin.wmsx.room && iframeWin.wmsx.room.speaker) {
+                      try {
+                        iframeWin.wmsx.room.speaker.powerOn();
+                        iframeWin.wmsx.room.speaker.mute(false);
+                        console.log('[Audio] ✓ WebMSX speaker API called');
+                      } catch (e) {
+                        console.log('[Audio] API failed:', e.message);
+                      }
+                    }
+                  }, 1000);
+
+                  canvas.focus();
+                  webmsxFrame.contentWindow.focus();
+                  console.log('[Audio] Canvas click attempts sent');
+                }
+              }, 100);
+          }
+        } catch (e) {
+          console.error('[Emulator] Setup failed:', e);
+        }
+      });
+    }
+
+    // Note: Keyboard events are handled inside the iframe (see load event handler above)
+    // The iframe has focus for sound activation, so parent listeners won't receive keyboard events
+
+    // Load the emulator
+    loadEmulator();
+  </script>
+</body>
+</html>

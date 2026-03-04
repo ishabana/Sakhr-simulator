@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC4 - TV Screen Animation</title>
+  <link rel="stylesheet" href="../../fonts.css">
+  <script src="../../engine/audio-player.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #000000;
+      overflow: hidden;
+      width: 1280px;
+      height: 800px;
+    }
+    #wrapper {
+      width: 1280px;
+      height: 800px;
+      position: relative;
+    }
+    .still {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: auto;
+      z-index: 1;
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path 2s ease-out;
+    }
+    .sliding-image {
+      position: absolute;
+      left: 980px;
+      top: 200px;
+      width: 0px;
+      height: auto;
+      z-index: 2;
+      image-rendering: pixelated;
+      transform-origin: center;
+      transition: width 2s ease-out;
+    }
+    .shooter {
+      position: absolute;
+      right: 80px;
+      width: 300px;
+      height: auto;
+      z-index: 5;
+      image-rendering: pixelated;
+      transform: scaleX(-1);
+    }
+    .letter {
+      position: absolute;
+      font-family: 'FF Sakhr', monospace;
+      font-size: 48px;
+      color: #FFFFFF;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper"></div>
+
+  <script>
+    const wrapper = document.getElementById('wrapper');
+    const ARABIC_LETTERS = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'];
+
+    // Create still image (centered)
+    const still = document.createElement('img');
+    still.src = 'still.png';
+    still.className = 'still';
+    wrapper.appendChild(still);
+
+    // Create sliding image (1-2.png) that moves from left to right
+    const slidingImage = document.createElement('img');
+    slidingImage.src = '1-2.png';
+    slidingImage.className = 'sliding-image';
+    wrapper.appendChild(slidingImage);
+
+    // Create shooter character (right side, flipped)
+    const shooter = document.createElement('img');
+    shooter.src = '1.png';
+    shooter.className = 'shooter';
+    wrapper.appendChild(shooter);
+
+    let letters = [];
+    let shooterY = 100; // Shooter vertical position
+    let shooterDirection = 1; // 1 for down, -1 for up
+    let slideX = 980; // Sliding image position (start from center)
+    let slidingStarted = false;
+
+    console.log('SC4: TV screen scene started');
+
+    // Play audio
+    if (window.audioPlayer) {
+      try {
+        window.audioPlayer.stopMusic();
+        window.audioPlayer.playMusic('ibn-sina.mp3', {
+          volume: 0.7,
+          loop: false
+        });
+        console.log('SC4: Audio started');
+      } catch (e) {
+        console.log('Sound file not found (optional):', e);
+      }
+    }
+
+    // Wipe down still image
+    setTimeout(() => {
+      still.style.clipPath = 'inset(0 0 0 0)';
+    }, 100);
+
+    // Zoom in sliding image
+    setTimeout(() => {
+      slidingImage.style.width = '300px';
+    }, 2500);
+
+    // Function to shoot letter towards sliding image
+    function shootLetter() {
+      const letter = document.createElement('div');
+      letter.className = 'letter';
+      letter.textContent = ARABIC_LETTERS[Math.floor(Math.random() * ARABIC_LETTERS.length)];
+
+      // Position from shooter, shoot towards sliding image
+      const startX = 850;
+      const targetY = 200 + 150; // Target the center of sliding image (top 200 + half height)
+
+      letter.style.left = startX + 'px';
+      letter.style.top = (shooterY + 100) + 'px';
+
+      wrapper.appendChild(letter);
+
+      letters.push({
+        element: letter,
+        x: startX,
+        y: shooterY + 100,
+        targetY: targetY
+      });
+    }
+
+    // Animate shooter switching between 1.png and 2.png
+    let currentFrame = 1;
+    setInterval(() => {
+      if (currentFrame === 1) {
+        shooter.src = '2.png';
+        currentFrame = 2;
+
+        // Shoot letter when switching to 2.png AND chip is sliding
+        if (slidingStarted) {
+          shootLetter();
+        }
+      } else {
+        shooter.src = '1.png';
+        currentFrame = 1;
+      }
+    }, 800); // Switch every 800ms
+
+    // Start sliding after zoom completes
+    setTimeout(() => {
+      slidingStarted = true;
+    }, 5000);
+
+    // Frame-by-frame movement for shooter and sliding image
+    const moveInterval = setInterval(() => {
+      // Move shooter vertically (frame by frame)
+      shooterY += shooterDirection * 50; // Move 50px per frame
+      if (shooterY <= 50 || shooterY >= 500) {
+        shooterDirection *= -1;
+      }
+      shooter.style.top = shooterY + 'px';
+
+      // Move sliding image from right to left (frame by frame) after it has zoomed in
+      if (slidingStarted) {
+        slideX -= 50; // Move 50px per frame to the left
+        slidingImage.style.left = slideX + 'px';
+
+        // If sliding image exits left side completely, stop moving it
+        if (slideX < -350) { // Image width is 300px, so -350 ensures it's completely out
+          clearInterval(moveInterval);
+        }
+      }
+    }, 400); // Frame-by-frame movement every 400ms
+
+    // Smooth animation loop for letters (not frame by frame)
+    function animateLetters() {
+      letters.forEach((letter, index) => {
+        // Move left towards the sliding image
+        letter.x -= 8;
+
+        // Move vertically to track the sliding image position
+        const yDiff = letter.targetY - letter.y;
+        letter.y += yDiff * 0.1; // Smooth tracking
+
+        letter.element.style.left = letter.x + 'px';
+        letter.element.style.top = letter.y + 'px';
+
+        // Collision detection with sliding image
+        const chipLeft = slideX;
+        const chipRight = slideX + 300; // Chip width
+        const chipTop = 200;
+        const chipBottom = 200 + 200; // Approximate chip height
+
+        const letterCenterX = letter.x + 24; // Letter center (font size 48 / 2)
+        const letterCenterY = letter.y + 24;
+
+        // Check if letter hits the chip
+        if (letterCenterX >= chipLeft && letterCenterX <= chipRight &&
+            letterCenterY >= chipTop && letterCenterY <= chipBottom) {
+          // Hit! Remove letter
+          letter.element.remove();
+          letters.splice(index, 1);
+          return;
+        }
+
+        // Remove letters that go off screen (missed)
+        if (letter.x < -50) {
+          letter.element.remove();
+          letters.splice(index, 1);
+        }
+      });
+
+      requestAnimationFrame(animateLetters);
+    }
+
+    // Start smooth letter animation
+    animateLetters();
+
+    // End scene after 15 seconds
+    setTimeout(() => {
+      setTimeout(() => {
+        window.parent.postMessage('sc4-complete', '*');
+      }, 1000);
+    }, 15000);
+  </script>
+</body>
+</html>

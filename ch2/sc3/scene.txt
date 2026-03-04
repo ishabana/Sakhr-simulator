@@ -1,0 +1,2 @@
+1- scene opens with black color on the background then logo.png starts to wipe in from bottom up
+2- machine.png slides in from right to left of the canvas frame by frame

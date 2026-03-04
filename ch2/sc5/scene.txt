@@ -1,0 +1,2 @@
+1- scene starts with the sakhr blue color as the background color of canvas
+2- then front-1.png wipes in from to bottom

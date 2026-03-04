@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SC7 - Matrix Rain Effect</title>
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="../../fonts.css">
+  <!-- Animation System CSS -->
+  <link rel="stylesheet" href="../../styles/animation-base.css">
+  <link rel="stylesheet" href="../../styles/text-boxes.css">
+  <style>
+    body {
+      background: #1A1A1A;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .screen-container {
+      position: relative;
+      width: 1280px;
+      height: 800px;
+      background: #000000;
+      overflow: hidden;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+    }
+    .rain-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 15;
+      pointer-events: none;
+    }
+    .letter {
+      position: absolute;
+      font-family: 'FF Sakhr', monospace;
+      font-size: 40px;
+      color: #ffffff;
+      opacity: 0.8;
+    }
+    .brick-layer {
+      position: absolute;
+      width: 1280px;
+      height: 32px;
+      z-index: 50;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .brick-layer img {
+      width: 64px;
+      height: 32px;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Screen Container - Fixed 1280x800 -->
+  <div class="screen-container">
+    <!-- Scene Container -->
+    <div id="scene-container" class="loading">
+      جاري التحميل...
+    </div>
+  </div>
+  <!-- Animation Engine Scripts -->
+  <script src="../../engine/typewriter.js"></script>
+  <script src="../../engine/sprite-animator.js"></script>
+  <script src="../../engine/audio-player.js"></script>
+  <script src="../../engine/engine.js"></script>
+  <script>
+    // Scene 7 configuration
+    const SC7_CONFIG = {
+      "duration": 20000,
+      "backgroundColor": "#000000",
+      "autoAdvance": false
+    };
+    // Arabic letters array
+    const arabicLetters = ['ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'];
+    const icons = ['🖱️', '🪟', '💾', '🖥️'];
+    let rainInterval = null;
+    let letterElements = [];
+    // Add callback to notify parent when scene ends
+    SC7_CONFIG.onEnd = () => {
+      console.log('SC7 ended');
+      if (rainInterval) clearInterval(rainInterval);
+      setTimeout(() => {
+        window.parent.postMessage('sc7-complete', '*');
+      }, 1000);
+    };
+    // Create rain letter with FRAME BY FRAME animation
+    function createRainLetter() {
+      const letter = document.createElement('div');
+      letter.className = 'letter';
+      letter.textContent = arabicLetters[Math.floor(Math.random() * arabicLetters.length)];
+      letter.style.left = Math.random() * 1280 + 'px';
+      letter.style.top = -30 + 'px';
+      const rainContainer = document.querySelector('.rain-container');
+      if (rainContainer) {
+        rainContainer.appendChild(letter);
+        letterElements.push(letter);
+        // Animate letter falling FRAME BY FRAME (step-based, no smooth transition)
+        let currentY = -30;
+        const stepSize = 25; // Fall 25px per frame
+        let flipCounter = 0;
+        const fallInterval = setInterval(() => {
+          currentY += stepSize; // Frame by frame jump
+          letter.style.top = currentY + 'px';
+          // Flip letter randomly (slowly)
+          flipCounter++;
+          if (flipCounter > 30) { // Every 30 frames (~1.5 seconds)
+            flipCounter = 0;
+            const rand = Math.random();
+            if (rand < 0.15) {
+              // 15% chance to show icon
+              letter.textContent = icons[Math.floor(Math.random() * icons.length)];
+            } else {
+              letter.textContent = arabicLetters[Math.floor(Math.random() * arabicLetters.length)];
+            }
+          }
+          // Remove when off screen
+          if (currentY > 850) {
+            clearInterval(fallInterval);
+            letter.remove();
+            letterElements = letterElements.filter(l => l !== letter);
+          }
+        }, 200); // 200ms per frame (5 frames per second)
+      }
+    }
+    // Build brick wall LINE BY LINE from bottom to top using b.png
+    function buildWall() {
+      const container = document.getElementById('scene-container');
+      const brickHeight = 32; // Scaled height per row
+      const brickWidth = 64; // Scaled width per brick
+      const bricksPerRow = Math.ceil(1280 / brickWidth); // 20 bricks per row
+      const totalRows = Math.ceil(800 / brickHeight); // 25 rows to fill screen
+      let currentRow = 0;
+      const buildInterval = setInterval(() => {
+        if (currentRow >= totalRows) {
+          clearInterval(buildInterval);
+          return;
+        }
+        // Create a row of bricks
+        const row = document.createElement('div');
+        row.className = 'brick-layer';
+        row.style.bottom = (currentRow * brickHeight) + 'px';
+        // Fill row with brick images
+        for (let i = 0; i < bricksPerRow; i++) {
+          const brick = document.createElement('img');
+          brick.src = 'b.png';
+          row.appendChild(brick);
+        }
+        container.appendChild(row);
+        currentRow++;
+      }, 200); // 200ms per row (frame by frame)
+    }
+    // Play scene
+    window.addEventListener('load', () => {
+      // Play audio
+      if (window.audioPlayer) {
+        try {
+          window.audioPlayer.stopMusic();
+          window.audioPlayer.playMusic('dict.mp3', {
+            volume: 0.7,
+            loop: false
+          });
+          console.log('SC7: Audio started');
+        } catch (e) {
+          console.log('Sound file not found (optional):', e);
+        }
+      }
+      // Create and setup scene
+      const container = document.getElementById('scene-container');
+      container.innerHTML = '';
+      container.classList.remove('loading');
+      container.style.background = '#000000';
+      // Show 1.png in center FIRST (behind everything)
+      const image1 = document.createElement('img');
+      image1.src = '1.png';
+      image1.className = 'sprite';
+      image1.style.position = 'absolute';
+      image1.style.left = '50%';
+      image1.style.top = '50%';
+      image1.style.transform = 'translate(-50%, -50%)';
+      image1.style.width = '500px';
+      image1.style.zIndex = '5';
+      container.appendChild(image1);
+      // Time 0: Add 3.png as SPRITE covering everything
+      const image3Cover = document.createElement('img');
+      image3Cover.src = '3.png';
+      image3Cover.style.position = 'absolute';
+      image3Cover.style.left = '0';
+      image3Cover.style.top = '0';
+      image3Cover.style.width = '100%';
+      image3Cover.style.height = '100%';
+      image3Cover.style.objectFit = 'cover';
+      image3Cover.style.zIndex = '20';
+      container.appendChild(image3Cover);
+      // Time 1000: Slide 3.png down FRAME BY FRAME
+      setTimeout(() => {
+        let currentTop = 0;
+        const slideInterval = setInterval(() => {
+          currentTop += 100; // Frame by frame jump (100px per frame)
+          if (currentTop >= 900) {
+            clearInterval(slideInterval);
+            image3Cover.remove();
+          } else {
+            image3Cover.style.top = currentTop + 'px';
+          }
+        }, 200); // 200ms per frame
+      }, 1000);
+      // Time 3000: Start rain effect
+      setTimeout(() => {
+        const rainContainer = document.createElement('div');
+        rainContainer.className = 'rain-container';
+        container.appendChild(rainContainer);
+        // Create rain letters periodically
+        rainInterval = setInterval(() => {
+          createRainLetter();
+        }, 200);
+      }, 3000);
+      // Time 8000: Change 1.png to 2.png
+      setTimeout(() => {
+        image1.src = '2.png';
+      }, 8000);
+      // Time 12000: Start building brick wall LINE BY LINE
+      setTimeout(() => {
+        buildWall();
+      }, 12000);
+      // Schedule scene end
+      setTimeout(() => {
+        if (SC7_CONFIG.onEnd) {
+          SC7_CONFIG.onEnd();
+        }
+      }, SC7_CONFIG.duration);
+    });
+  </script>
+</body>
+</html>

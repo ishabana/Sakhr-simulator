@@ -1,0 +1,102 @@
+/* Text Box Styles - For different text presentation modes */
+
+/* Text Overlay - Direct text on background */
+.text-overlay {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* English text - Use MSX International font with LTR direction */
+.text-overlay[lang="en"],
+.english-text,
+.msx-international {
+  font-family: 'MSX International', monospace;
+  direction: ltr;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+  text-rendering: geometricPrecision;
+}
+
+/* Text Box - Box with background */
+.text-box {
+  background: rgba(36, 36, 182, 0.95);
+  border: 3px solid #FFFFFF;
+  padding: 16px 24px;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+}
+
+/* Dialog Box - Character dialog */
+.dialog-box {
+  background: rgba(0, 0, 0, 0.9);
+  border: 3px solid #FFFFFF;
+  padding: 20px 28px;
+  box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.3);
+}
+
+/* Caption Box - Small caption text */
+.caption-box {
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid #00DBDB;
+  padding: 12px 20px;
+  font-size: 18px;
+}
+
+/* Title Text - Large centered text */
+.title-text {
+  font-size: 48px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 4px 4px 0px #000000;
+  color: #FFFFFF;
+}
+
+/* Subtitle Text - Medium text */
+.subtitle-text {
+  font-size: 32px;
+  text-align: center;
+  text-shadow: 3px 3px 0px #000000;
+  color: #DBDB00;
+}
+
+/* Narration Text - Story narration */
+.narration-text {
+  font-size: 24px;
+  line-height: 1.5;
+  max-width: 90%;
+  text-align: center;
+}
+
+/* Position Helpers */
+.text-top {
+  top: 40px;
+}
+
+.text-center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.text-bottom {
+  bottom: 40px;
+}
+
+.text-left {
+  left: 40px;
+  text-align: right; /* RTL */
+}
+
+.text-right {
+  right: 40px;
+  text-align: left; /* RTL */
+}
+
+.text-center-x {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.text-center-xy {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
